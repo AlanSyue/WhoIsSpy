@@ -1,0 +1,9 @@
+.next
+
+config/*
+!config/index.js
+!config/env.js
+
+node_modules
+
+jsconfig.json

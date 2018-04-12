@@ -12,9 +12,9 @@ import {
 
 export default class extends React.Component {
   static getInitialProps = async ({ query }) => {
-    const player = clamp(+query.player || 0, MIN_PLAYER, MAX_PLAYER)
-    const spy = clamp(+query.spy || 0, 1, Math.ceil(player / 4))
     const whiteboard = query.whiteboard === 'true'
+    const player = clamp(+query.player || 0, MIN_PLAYER, MAX_PLAYER)
+    const spy = clamp(+query.spy || 0, 1, Math.ceil(player / 4) - whiteboard)
 
     return {
       query: {

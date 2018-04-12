@@ -29,8 +29,6 @@ export const random = async (ctx, next) => {
 
   const selectedQuestion = questions[Math.floor(Math.random() * questions.length)]
 
-  await new Promise(resolve => setTimeout(resolve, 2000))
-
   ctx.render(201, formatQuestion(selectedQuestion))
 }
 

@@ -3,10 +3,7 @@ import PropTypes from 'prop-types'
 import styled from 'styled-components'
 
 const Container = styled.div`
-  position: relative;
-  height: 100%;
-  width: 100%;
-  overflow: hidden;
+  color: white;
 `
 
 export default class GamePage extends React.Component {
@@ -23,19 +20,18 @@ export default class GamePage extends React.Component {
   }
 
   componentDidMount = () => {
-   this.props.getQuestionAsync()
+    this.props.getQuestionAsync()
   }
 
   render = () => {
     const { loading, query, question } = this.props
 
     return (
-      <div>
-        Card
-        <div>{question.spy}</div>
+      <Container>
         {JSON.stringify(query, null, '\t')}
         {loading && <div>Loading...</div>}
-      </div>
+        <div>{question.spy}</div>
+      </Container>
     )
   }
 }

@@ -29,8 +29,9 @@ const Button = styled.button`
   flex: 1;
   color: #FFFFFF;
   font-size: 1em;
-  cursor: pointer;
   transition: .4s;
+  cursor: ${props => props.disabled ? 'default' : 'pointer'};
+  opacity: ${props => props.disabled ? 0.1 : 1};
 
   :active {
     background-color: ${theme.widgetActive};
@@ -73,14 +74,14 @@ export default class Stepper extends React.Component {
   }
 
   render = () => {
-    const { className, value, onChange } = this.props
+    const { className, max, min, value, onChange } = this.props
     const { width } = this.state
 
     return (
       <Container className={className}>
         <Wrapper>
-          <Button onClick={this.handleChange(-1)}>-</Button>
-          <Button onClick={this.handleChange(+1)}>+</Button>
+          <Button disabled={value <= min} onClick={this.handleChange(-1)}>-</Button>
+          <Button disabled={value >= max} onClick={this.handleChange(+1)}>+</Button>
         </Wrapper>
       </Container>
     )

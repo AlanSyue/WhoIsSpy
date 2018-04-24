@@ -128,7 +128,7 @@ export default class MenuPage extends React.Component {
           </Label>
         </Section>
         <Section>
-          <SubmitButton to={`/game?player=${player}&spy=${spy}&whiteboard=${whiteboard.toString()}`}>
+          <SubmitButton to={`/game?player=${player}&spy=${spy}&whiteboard=${+whiteboard}`}>
             <ButtonContent>{locale('menu.start')}</ButtonContent>
           </SubmitButton>
         </Section>

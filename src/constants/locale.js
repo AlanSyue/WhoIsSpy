@@ -1,4 +1,7 @@
 const DICTIONARY = {
+  game: {
+    whiteboard: '白板'
+  },
   menu: {
     player: '玩家',
     start: '開始遊戲',

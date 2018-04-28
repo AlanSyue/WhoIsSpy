@@ -8,5 +8,8 @@ export default {
   widget: 'rgba(255, 255, 255, 0.2)',
   widgetActive: 'rgba(255, 255, 255, 0.6)',
 
-  textPrimary: '#FFFFFF'
+  textPrimary: '#FFFFFF',
+  textDark: '#4A4A4A',
+
+  cardForeground: '#DADADA'
 }

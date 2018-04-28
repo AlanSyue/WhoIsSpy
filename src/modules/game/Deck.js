@@ -1,13 +1,17 @@
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
 
+import Button from '~/modules/common/Button'
+import CameraView from './CameraView'
+
+import locale from '~/constants/locale'
 import theme from '~/constants/theme'
 
+const cardBorderWidth = 4
 const cardWidth = '45vw'
 
 const Container = styled.div`
   position: absolute;
-  background-color: rgba(0, 0, 0, 0.5);
   top: 0;
   left: 0;
   height: 100%;
@@ -31,12 +35,13 @@ const CardWrapper = styled.div`
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
   position: relative;
   background-color: ${theme.accent};
-  border: 3px solid white;
+  border: ${cardBorderWidth}px solid white;
   border-radius: 17px;
   padding-bottom: 140%;
   width: ${cardWidth};
   transform: translate(-50%, -50%);
   overflow: hidden;
+  cursor: pointer;
 `
 const CardBody = styled.div`
   position: absolute;
@@ -47,6 +52,53 @@ const CardBody = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+`
+const DrawnCard = CardWrapper.extend.attrs({
+  style: ({ drawnCardDim }) => ({
+    height: `${drawnCardDim.height}px`,
+    width: `${drawnCardDim.width}px`,
+    left: `${drawnCardDim.left}px`,
+    top: `${drawnCardDim.top}px`
+  })
+})`
+  display: ${props => props.drawnCardDim.height ? 'block' : 'none'};
+  box-shadow: ${props => props.drawnCardDim.height && '0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22)'};
+  position: absolute;
+  padding-bottom: 0;
+  transform: none;
+  cursor: default;
+  transition: ${props => props.drawnCardDim.elevate && 'all .5s cubic-bezier(.4, 0, .2, 1)'};
+  overflow: visible;
+`
+const DrawnCardBody = styled.div`
+  background-color: ${theme.cardForeground};
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: visible;
+  border-radius: 13px;
+`
+const DrawnCardContent = styled.div`
+  color: ${theme.textDark};
+  font-size: 40px;
+  font-weight: bold;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`
+const ConfirmButton = styled(Button)`
+  position: absolute;
+  top: calc(100% + 30px);
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 16px 20px;
+`
+const ButtonContent = styled.p`
+  font-size: 20px;
+  line-height: 1;
+  user-select: none;
 `
 
 export default class Deck extends React.Component {
@@ -61,8 +113,13 @@ export default class Deck extends React.Component {
   constructor (props) {
     super(props)
 
+    this.cardsRef = []
+    this.cameraView = null
+
     this.state = {
-      cardsDrawn: 0
+      cardsDrawn: 0,
+      drawnCardDim: {},
+      showDrawnCardContent: false
     }
   }
 
@@ -74,20 +131,94 @@ export default class Deck extends React.Component {
       <Container>
         <Wrapper>
           {cards.slice(0, cards.length - cardsDrawn).map((card, index, array) => (
-            <CardContainer key={index} shift={(index / (array.length - 1) - 0.5) || 0}>
+            <CardContainer
+              key={index}
+              shift={(index / (array.length - 1) - 0.5) || 0}>
               <CardWrapper>
-                <CardBody onClick={this.handleCardClick}>
-                  {card.type} {card.question}
-                </CardBody>
+                <CardBody
+                  innerRef={ref => { this.cardsRef[index] = ref }}
+                  onClick={this.handleCardClick}/>
               </CardWrapper>
             </CardContainer>
           ))}
         </Wrapper>
+        {this.renderDrawnCard()}
       </Container>
     )
   }
 
+  renderDrawnCard = () => {
+    const { cards } = this.props
+    const { cardsDrawn, drawnCardDim, showDrawnCardContent } = this.state
+    const card = cards[cards.length - cardsDrawn] || {}
+
+    return (
+      <DrawnCard drawnCardDim={drawnCardDim}>
+        {showDrawnCardContent && (
+          <React.Fragment>
+            <DrawnCardBody>
+              <CameraView
+                ref={ref => { this.cameraView = ref }}
+                onShot={this.handleShot}/>
+              <DrawnCardContent>
+                {card.question}
+              </DrawnCardContent>
+            </DrawnCardBody>
+            <ConfirmButton>
+              <ButtonContent onClick={this.handleConfirmButtonClick}>
+                {locale('game.confirmCard')}
+              </ButtonContent>
+            </ConfirmButton>
+          </React.Fragment>
+        )}
+      </DrawnCard>
+    )
+  }
+
   handleCardClick = e => {
-    this.setState({ cardsDrawn: this.state.cardsDrawn + 1 })
+    const rect = this.cardsRef[this.cardsRef.length - this.state.cardsDrawn - 1].getBoundingClientRect()
+
+    this.setState({
+      drawnCardDim: {
+        elevate: false
+      },
+      showDrawnCardContent: false
+    }, () => requestAnimationFrame(() => {
+      this.setState({
+        cardsDrawn: this.state.cardsDrawn + 1,
+        drawnCardDim: {
+          height: rect.height + cardBorderWidth * 2,
+          width: rect.width + cardBorderWidth * 2,
+          top: rect.top - cardBorderWidth,
+          left: rect.left - cardBorderWidth
+        }
+      }, () => requestAnimationFrame(() => {
+        const newDim = this.state.drawnCardDim
+        const height = newDim.height * 1.5
+        const width = newDim.width * 1.5
+        const top = (window.innerHeight - height) / 2
+        const left = (window.innerWidth - width) / 2
+
+        this.setState({
+          drawnCardDim: {
+            height,
+            width,
+            top,
+            left,
+            elevate: true
+          }
+        })
+
+        setTimeout(() => requestAnimationFrame(() => this.setState({ showDrawnCardContent: true })), 500)
+      }))
+    }))
+  }
+
+  handleConfirmButtonClick = e => {
+    this.cameraView.confirm()
+  }
+
+  handleShot = dataUrl => {
+    console.log(dataUrl)
   }
 }

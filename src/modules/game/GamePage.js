@@ -4,7 +4,9 @@ import range from 'lodash/range'
 import shuffle from 'lodash/shuffle'
 import styled from 'styled-components'
 
+import Card from './Card'
 import Deck from './Deck'
+import PlayerGallery from './PlayerGallery'
 
 import locale from '~/constants/locale'
 
@@ -14,13 +16,6 @@ const Container = styled.div`
   height: 100%;
   width: 100%;
 `
-
-class Card {
-  constructor ({ question, type }) {
-    this.question = question
-    this.type = type
-  }
-}
 
 export default class GamePage extends React.Component {
   static propTypes = {
@@ -39,7 +34,8 @@ export default class GamePage extends React.Component {
     super(props)
 
     this.state = {
-      cards: []
+      cards: [],
+      showDeck: true
     }
   }
 
@@ -54,13 +50,14 @@ export default class GamePage extends React.Component {
   }
 
   render = () => {
-    const { cards } = this.state
+    const { cards, showDeck } = this.state
 
     if (!cards.length) return null
 
     return (
       <Container>
-        <Deck cards={cards}/>
+        <PlayerGallery cards={cards}/>
+        {showDeck && <Deck cards={cards} onShot={this.handleShot}/>}
       </Container>
     )
   }
@@ -74,5 +71,18 @@ export default class GamePage extends React.Component {
     range(whiteboard).map(() => pushCard(locale('game.whiteboard'), 'whiteboard'))
 
     this.setState({ cards: shuffle(cards) })
+  }
+
+  handleShot = ({ dataUrl, index }) => {
+    const { cards } = this.state
+
+    cards[index].setSrc(dataUrl)
+
+    this.setState({ cards })
+
+    // last shot
+    if (index >= cards.length - 1) {
+      this.setState({ showDeck: false })
+    }
   }
 }

@@ -11,6 +11,7 @@ const cardBorderWidth = 4
 const cardWidth = '45vw'
 
 const Container = styled.div`
+  background-color: rgba(0, 0, 0, 0.5);
   position: absolute;
   top: 0;
   left: 0;
@@ -103,7 +104,8 @@ const ButtonContent = styled.p`
 
 export default class Deck extends React.Component {
   static propTypes = {
-    cards: PropTypes.array.isRequired
+    cards: PropTypes.array.isRequired,
+    onShot: PropTypes.func.isRequired
   }
 
   static defaultProps = {
@@ -123,6 +125,16 @@ export default class Deck extends React.Component {
     }
   }
 
+  componentDidMount = () => {
+    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+      navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {
+        this.stream = stream
+      }).catch(e => {
+        console.log(e)
+      })
+    }
+  }
+
   render = () => {
     const { cards } = this.props
     const { cardsDrawn } = this.state
@@ -130,7 +142,7 @@ export default class Deck extends React.Component {
     return (
       <Container>
         <Wrapper>
-          {cards.slice(0, cards.length - cardsDrawn).map((card, index, array) => (
+          {cards.slice(cardsDrawn, cards.length).reverse().map((card, index, array) => (
             <CardContainer
               key={index}
               shift={(index / (array.length - 1) - 0.5) || 0}>
@@ -150,18 +162,19 @@ export default class Deck extends React.Component {
   renderDrawnCard = () => {
     const { cards } = this.props
     const { cardsDrawn, drawnCardDim, showDrawnCardContent } = this.state
-    const card = cards[cards.length - cardsDrawn] || {}
+    const card = cards[cardsDrawn - 1] || {}
 
     return (
       <DrawnCard drawnCardDim={drawnCardDim}>
-        {showDrawnCardContent && (
+        {this.stream && showDrawnCardContent && (
           <React.Fragment>
             <DrawnCardBody>
               <CameraView
                 ref={ref => { this.cameraView = ref }}
+                stream={this.stream}
                 onShot={this.handleShot}/>
               <DrawnCardContent>
-                {card.question}
+                {card.question || locale('game.whiteboard')}
               </DrawnCardContent>
             </DrawnCardBody>
             <ConfirmButton>
@@ -176,7 +189,11 @@ export default class Deck extends React.Component {
   }
 
   handleCardClick = e => {
-    const rect = this.cardsRef[this.cardsRef.length - this.state.cardsDrawn - 1].getBoundingClientRect()
+    const { cardsDrawn, drawnCardDim } = this.state
+
+    if (drawnCardDim.height) return
+
+    const rect = this.cardsRef[this.cardsRef.length - cardsDrawn - 1].getBoundingClientRect()
 
     this.setState({
       drawnCardDim: {
@@ -215,10 +232,29 @@ export default class Deck extends React.Component {
   }
 
   handleConfirmButtonClick = e => {
-    this.cameraView.confirm()
+    const { cards } = this.props
+    const { cardsDrawn } = this.state
+    const isLastShot = cardsDrawn >= cards.length
+
+    this.cameraView.shot()
+
+    if (isLastShot) this.stream.getTracks()[0].stop()
   }
 
   handleShot = dataUrl => {
-    console.log(dataUrl)
+    const { onShot } = this.props
+    const { cardsDrawn } = this.state
+
+    onShot({
+      dataUrl,
+      index: cardsDrawn - 1
+    })
+
+    this.setState({
+      drawnCardDim: {
+        elevate: false
+      },
+      showDrawnCardContent: false
+    })
   }
 }

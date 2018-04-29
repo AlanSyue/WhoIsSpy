@@ -1,6 +1,8 @@
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
 
+import { MAX_IMAGE_SIZE } from '~/constants/common'
+
 const Container = styled.div`
   display: flex;
   justify-content: center;
@@ -35,6 +37,7 @@ const Img = styled.img`
 
 export default class CameraView extends React.Component {
   static propTypes = {
+    stream: PropTypes.object.isRequired,
     onShot: PropTypes.func.isRequired
   }
 
@@ -45,13 +48,9 @@ export default class CameraView extends React.Component {
   }
 
   componentDidMount = () => {
-    if (this.video && navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-      navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {
-        this.video.srcObject = stream
-        this.video.play()
-      }).catch(err => {
-        alert(err)
-      })
+    if (this.video) {
+      this.video.srcObject = this.props.stream
+      this.video.play()
     }
   }
 
@@ -68,7 +67,9 @@ export default class CameraView extends React.Component {
     )
   }
 
-  confirm = () => {
+  shot = () => {
+    if (!this.video.srcObject) return
+
     const { onShot } = this.props
     const canvas = document.createElement('canvas')
 
@@ -77,13 +78,14 @@ export default class CameraView extends React.Component {
     const imgSize = Math.min(vw, vh)
     const left = (vw - imgSize) / 2
     const top = (vh - imgSize) / 2
+    const canvasSize = Math.min(imgSize, MAX_IMAGE_SIZE)
 
-    canvas.width = imgSize
-    canvas.height = imgSize
+    canvas.width = canvasSize
+    canvas.height = canvasSize
 
     const ctx = canvas.getContext('2d')
 
-    ctx.drawImage(this.video, left, top, imgSize, imgSize, 0, 0, imgSize, imgSize)
+    ctx.drawImage(this.video, left, top, imgSize, imgSize, 0, 0, canvasSize, canvasSize)
 
     const src = canvas.toDataURL('image/jpg')
 

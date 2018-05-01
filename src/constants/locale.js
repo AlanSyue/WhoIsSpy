@@ -3,6 +3,8 @@ const DICTIONARY = {
     confirmCard: '我記住了',
     execute: '處決',
     forget: '忘詞',
+    loyal: '平民',
+    spy: '臥底',
     whiteboard: '白板'
   },
   menu: {

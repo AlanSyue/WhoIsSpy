@@ -1,3 +1,4 @@
+import noop from 'lodash/noop'
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
 
@@ -50,7 +51,7 @@ const PlayerWrapper = styled.div`
 const PlayerPhoto = styled.img`
   height: 101%;
   width: 101%;
-  cursor: pointer;
+  cursor: ${props => props.disable ? 'default' : 'pointer'};
 `
 const PlayerNumber = styled.div`
   background-color: ${theme.primary};
@@ -60,14 +61,22 @@ const PlayerNumber = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 24px;
-  width: 24px;
+  height: 26px;
+  width: 26px;
   color: white;
   font-size: 14px;
   line-height: 1;
-  border-radius: 100%;
+  border-radius: 100vh;
   opacity: 0.9;
   pointer-events: none;
+`
+const PlayerRevealType = PlayerNumber.extend`
+  background-color: ${props => theme[props.type]};
+  color: ${props => theme[props.type === 'whiteboard' ? 'textDark' : 'textPrimary']};
+  left: auto;
+  right: 5%;
+  width: auto;
+  padding: 0 10px;
 `
 
 export default class PlayerGallery extends React.Component {
@@ -111,19 +120,24 @@ export default class PlayerGallery extends React.Component {
     )
   }
 
-  renderPlayer = ({ src }, index) => {
+  renderPlayer = ({ revealed, src, type }, index) => {
     const { selectedIndex } = this.state
-    const selected = index === selectedIndex || selectedIndex === -1
+    const selected = (index === selectedIndex || selectedIndex === -1) && !revealed
 
     return (
       <PlayerContainer key={index}>
         {src && (
           <PlayerWrapper selected={selected}>
-            <PlayerPhoto src={src} onClick={this.handlePlayerClick(index)}/>
+            <PlayerPhoto src={src} disable={revealed} onClick={revealed ? noop : this.handlePlayerClick(index)}/>
             <PlayerNumber>
-                {index + 1}
+              {index + 1}
             </PlayerNumber>
           </PlayerWrapper>
+        )}
+        {revealed && (
+          <PlayerRevealType type={type}>
+            {locale(`game.${type}`)}
+          </PlayerRevealType>
         )}
       </PlayerContainer>
     )

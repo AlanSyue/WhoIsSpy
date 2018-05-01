@@ -73,17 +73,6 @@ export default class GamePage extends React.Component {
     )
   }
 
-  initialCards = ({ query: { loyal, spy, whiteboard }, question }) => {
-    const cards = []
-    const pushCard = (question, type) => cards.push(new Card({ question, type }))
-
-    range(loyal).map(() => pushCard(question.loyal, 'loyal'))
-    range(spy).map(() => pushCard(question.spy, 'spy'))
-    range(whiteboard).map(() => pushCard(locale('game.whiteboard'), 'whiteboard'))
-
-    this.setState({ cards: shuffle(cards) })
-  }
-
   handleShot = ({ dataUrl, index }) => {
     const { cards } = this.state
 
@@ -106,6 +95,25 @@ export default class GamePage extends React.Component {
   }
 
   handleExecute = index => e => {
+    const { cards } = this.state
 
+    cards[index].reveal()
+
+    this.setState({ cards }, this.gudgeGame)
+  }
+
+  initialCards = ({ query: { loyal, spy, whiteboard }, question }) => {
+    const cards = []
+    const pushCard = (question, type) => cards.push(new Card({ question, type }))
+
+    range(loyal).map(() => pushCard(question.loyal, 'loyal'))
+    range(spy).map(() => pushCard(question.spy, 'spy'))
+    range(whiteboard).map(() => pushCard(locale('game.whiteboard'), 'whiteboard'))
+
+    this.setState({ cards: shuffle(cards) })
+  }
+
+  gudgeGame = () => {
+    console.log('gudgeGame');
   }
 }

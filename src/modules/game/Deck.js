@@ -1,3 +1,4 @@
+import noop from 'lodash/noop'
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
 
@@ -18,6 +19,9 @@ const Container = styled.div`
   height: 100%;
   width: 100%;
   overflow: hidden;
+  opacity: ${props => props.show ? 1 : 0};
+  pointer-events: ${props => props.show ? 'all' : 'none'};
+  transition: opacity .3s cubic-bezier(.4, 0, .2, 1);
 `
 const Wrapper = styled.div`
   position: absolute;
@@ -101,10 +105,35 @@ const ButtonContent = styled.p`
   line-height: 1;
   user-select: none;
 `
+const ForgetCardContainer = styled.div`
+  position: absolute;
+  transform: translate(-50%, -50%);
+  top: 50%;
+  left: 50%;
+`
+const ForgetCardWrapper = CardWrapper.extend`
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
+  width: calc(${cardWidth} * 1.5);
+  transform: none;
+  cursor: default;
+  overflow: visible;
+`
+const ForgetCardPhotoContainer = styled.div`
+  padding: 10% 10% 0 10%;
+`
+const ForgetCardPhoto = styled.img`
+  border: 3px solid white;
+  border-radius: 15px;
+  overflow: hidden;
+  width: 100%;
+`
 
 export default class Deck extends React.Component {
   static propTypes = {
     cards: PropTypes.array.isRequired,
+    showDeck: PropTypes.bool,
+    showForgetIndex: PropTypes.number,
+    onForgetContainerClick: PropTypes.func.isRequired,
     onShot: PropTypes.func.isRequired
   }
 
@@ -136,25 +165,31 @@ export default class Deck extends React.Component {
   }
 
   render = () => {
-    const { cards } = this.props
+    const { cards, showDeck, showForgetIndex, onForgetContainerClick } = this.props
     const { cardsDrawn } = this.state
+    const showForget = showForgetIndex !== -1
 
     return (
-      <Container>
-        <Wrapper>
-          {cards.slice(cardsDrawn, cards.length).reverse().map((card, index, array) => (
-            <CardContainer
-              key={index}
-              shift={(index / (array.length - 1) - 0.5) || 0}>
-              <CardWrapper>
-                <CardBody
-                  innerRef={ref => { this.cardsRef[index] = ref }}
-                  onClick={this.handleCardClick}/>
-              </CardWrapper>
-            </CardContainer>
-          ))}
-        </Wrapper>
-        {this.renderDrawnCard()}
+      <Container show={showDeck || showForget} onClick={showForget ? onForgetContainerClick : noop}>
+        {showDeck && (
+          <React.Fragment>
+            <Wrapper>
+              {cards.slice(cardsDrawn, cards.length).reverse().map((card, index, array) => (
+                <CardContainer
+                  key={index}
+                  shift={(index / (array.length - 1) - 0.5) || 0}>
+                  <CardWrapper>
+                    <CardBody
+                      innerRef={ref => { this.cardsRef[index] = ref }}
+                      onClick={this.handleCardClick}/>
+                  </CardWrapper>
+                </CardContainer>
+              ))}
+            </Wrapper>
+            {this.renderDrawnCard()}
+          </React.Fragment>
+        )}
+        {showForget && this.renderForgetCard(cards[showForgetIndex])}
       </Container>
     )
   }
@@ -187,6 +222,23 @@ export default class Deck extends React.Component {
       </DrawnCard>
     )
   }
+
+  renderForgetCard = card => (
+    <ForgetCardContainer>
+      <ForgetCardWrapper>
+        <CardBody>
+          <DrawnCardBody>
+            <ForgetCardPhotoContainer>
+              <ForgetCardPhoto src={card.src}/>
+            </ForgetCardPhotoContainer>
+            <DrawnCardContent>
+              {card.question || locale('game.whiteboard')}
+            </DrawnCardContent>
+          </DrawnCardBody>
+        </CardBody>
+      </ForgetCardWrapper>
+    </ForgetCardContainer>
+  )
 
   handleCardClick = e => {
     const { cardsDrawn, drawnCardDim } = this.state

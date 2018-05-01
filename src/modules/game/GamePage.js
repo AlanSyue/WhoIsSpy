@@ -9,6 +9,7 @@ import Deck from './Deck'
 import PlayerGallery from './PlayerGallery'
 
 import locale from '~/constants/locale'
+import theme from '~/constants/theme'
 
 const Container = styled.div`
   position: relative;
@@ -35,7 +36,8 @@ export default class GamePage extends React.Component {
 
     this.state = {
       cards: [],
-      showDeck: true
+      showDeck: true,
+      showForgetIndex: -1
     }
   }
 
@@ -50,14 +52,23 @@ export default class GamePage extends React.Component {
   }
 
   render = () => {
-    const { cards, showDeck } = this.state
+    const { cards, showDeck, showForgetIndex } = this.state
 
     if (!cards.length) return null
 
     return (
       <Container>
-        <PlayerGallery cards={cards}/>
-        {showDeck && <Deck cards={cards} onShot={this.handleShot}/>}
+        <PlayerGallery
+          cards={cards}
+          showFooter={!showDeck}
+          onExecute={this.handleExecute}
+          onForget={this.handleForget}/>
+        <Deck
+          cards={cards}
+          showDeck={showDeck}
+          showForgetIndex={showForgetIndex}
+          onForgetContainerClick={this.handleForgetContainerClick}
+          onShot={this.handleShot}/>
       </Container>
     )
   }
@@ -84,5 +95,17 @@ export default class GamePage extends React.Component {
     if (index >= cards.length - 1) {
       this.setState({ showDeck: false })
     }
+  }
+
+  handleForgetContainerClick = e => {
+    this.setState({ showForgetIndex: -1 })
+  }
+
+  handleForget = index => e => {
+    this.setState({ showForgetIndex: index })
+  }
+
+  handleExecute = index => e => {
+
   }
 }

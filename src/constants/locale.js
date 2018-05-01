@@ -1,6 +1,8 @@
 const DICTIONARY = {
   game: {
     confirmCard: '我記住了',
+    execute: '處決',
+    forget: '忘詞',
     whiteboard: '白板'
   },
   menu: {

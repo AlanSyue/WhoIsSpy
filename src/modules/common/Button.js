@@ -13,14 +13,17 @@ const Button = styled.button`
   outline: none;
   user-select: none;
   -webkit-tap-highlight-color: ${theme.widgetActive};
+  opacity: ${props => props.disable ? 0.2 : 1};
+  pointer-events: ${props => props.disable ? 'none' : 'all'};
+  transition: opacity .3s cubic-bezier(.4, 0, .2, 1);
 
   :active {
     background: ${theme.widgetActive};
   }
 `
 
-const renderButton = ({ children, className }) => <Button className={className}>{children}</Button>
+const renderButton = ({ children, className, disable, onClick }) => <Button className={className} disable={disable} onClick={onClick}>{children}</Button>
 
-export default ({ children, className, to }) => to
-  ? <Link to={to}><a>{renderButton({ children, className })}</a></Link>
-  : renderButton({ children, className })
+export default ({ children, className, disable, to, onClick }) => to && !disable
+  ? <Link to={to}><a>{renderButton({ children, className, onClick })}</a></Link>
+  : renderButton({ children, className, disable, onClick })

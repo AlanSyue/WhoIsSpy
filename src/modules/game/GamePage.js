@@ -99,7 +99,7 @@ export default class GamePage extends React.Component {
 
     cards[index].reveal()
 
-    this.setState({ cards }, this.gudgeGame)
+    this.setState({ cards }, this.judgeGame)
   }
 
   initialCards = ({ query: { loyal, spy, whiteboard }, question }) => {
@@ -113,7 +113,19 @@ export default class GamePage extends React.Component {
     this.setState({ cards: shuffle(cards) })
   }
 
-  gudgeGame = () => {
-    console.log('gudgeGame');
+  judgeGame = () => {
+    const { query } = this.props
+    const { cards } = this.state
+    const revealedLoyals = cards.reduce((count, card) => count + (card.revealed && card.type === 'loyal'), 0)
+    const revealedSpys = cards.reduce((count, card) => count + (card.revealed && card.type === 'spy'), 0)
+
+    if (revealedSpys >= query.spy) {
+      console.log('Loyals win!');
+      return
+    }
+    if (revealedLoyals >= query.loyal) {
+      console.log('Spys win!');
+      return
+    }
   }
 }

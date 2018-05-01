@@ -33,13 +33,14 @@ const FooterButton = styled(Button)`
     margin-right: 40px;
   }
 `
-const PlayerContainer = styled.div`
+const PlayerContainer = styled.div``
+const PlayerWrapper = styled.div`
   padding-bottom: 100%;
   width: 100%;
   position: relative;
   overflow: hidden;
 `
-const PlayerWrapper = styled.div`
+const PlayerBody = styled.div`
   position: absolute;
   top: 0;
   left: 0;
@@ -126,19 +127,21 @@ export default class PlayerGallery extends React.Component {
 
     return (
       <PlayerContainer key={index}>
-        {src && (
-          <PlayerWrapper selected={selected}>
-            <PlayerPhoto src={src} disable={revealed} onClick={revealed ? noop : this.handlePlayerClick(index)}/>
-            <PlayerNumber>
-              {index + 1}
-            </PlayerNumber>
-          </PlayerWrapper>
-        )}
-        {revealed && (
-          <PlayerRevealType type={type}>
-            {locale(`game.${type}`)}
-          </PlayerRevealType>
-        )}
+        <PlayerWrapper>
+          {src && (
+            <PlayerBody selected={selected}>
+              <PlayerPhoto src={src} disable={revealed} onClick={revealed ? noop : this.handlePlayerClick(index)}/>
+              <PlayerNumber>
+                {index + 1}
+              </PlayerNumber>
+            </PlayerBody>
+          )}
+          {revealed && (
+            <PlayerRevealType type={type}>
+              {locale(`game.${type}`)}
+            </PlayerRevealType>
+          )}
+        </PlayerWrapper>
       </PlayerContainer>
     )
   }

@@ -90,7 +90,7 @@ export default class Switch extends React.Component {
             <RockerShim src={this.transparentSrc}/>
             <Rocker innerRef={ref => {
               if (!ref) return
-              if (!this.state.width) this.setState({ width: ref.clientWidth })
+              if (this.state.width === null) this.setState({ width: ref.clientWidth })
             }} src={this.transparentSrc}/>
           </RockerContainer>
         </Slider>

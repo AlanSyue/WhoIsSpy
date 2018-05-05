@@ -11,5 +11,6 @@ export default {
   textPrimary: '#FFFFFF',
   textDark: '#4A4A4A',
 
-  cardForeground: '#DADADA'
+  cardForeground: '#DADADA',
+  dialogForeground: '#DADADA'
 }

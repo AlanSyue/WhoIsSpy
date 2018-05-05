@@ -1,4 +1,5 @@
 import Joi from 'joi'
+const { Op } = require('sequelize');
 
 import { Question } from '../../models'
 
@@ -9,6 +10,10 @@ const createSchema = Joi.object().keys({
 
 const deleteSchema = Joi.object().keys({
   id: Joi.string().guid()
+})
+
+const randomSchema = Joi.object().keys({
+  prevLoyal: Joi.string()
 })
 
 const formatQuestion = question => ({
@@ -25,7 +30,15 @@ export const list = async (ctx, next) => {
 }
 
 export const random = async (ctx, next) => {
-  const questions = await Question.findAll()
+  const { prevLoyal } = await ctx.validate(ctx.query, randomSchema)
+
+  const questions = await Question.findAll(prevLoyal ? {
+    where: {
+      loyal: {
+        [Op.ne]: prevLoyal
+      }
+    }
+  } : {})
 
   const selectedQuestion = questions[Math.floor(Math.random() * questions.length)]
 

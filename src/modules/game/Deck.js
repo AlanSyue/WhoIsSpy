@@ -147,6 +147,8 @@ export default class Deck extends React.Component {
     this.cardsRef = []
     this.cameraView = null
 
+    this.isReplay = !!(props.cards[0] || {}).src
+
     this.state = {
       cardsDrawn: 0,
       drawnCardDim: {},
@@ -155,7 +157,7 @@ export default class Deck extends React.Component {
   }
 
   componentDidMount = () => {
-    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+    if (!this.isReplay && navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
       navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {
         this.stream = stream
       }).catch(e => {
@@ -201,11 +203,12 @@ export default class Deck extends React.Component {
 
     return (
       <DrawnCard drawnCardDim={drawnCardDim}>
-        {this.stream && showDrawnCardContent && (
+        {(this.isReplay || this.stream) && showDrawnCardContent && (
           <React.Fragment>
             <DrawnCardBody>
               <CameraView
                 ref={ref => { this.cameraView = ref }}
+                src={card.src}
                 stream={this.stream}
                 onShot={this.handleShot}/>
               <DrawnCardContent>
@@ -287,10 +290,15 @@ export default class Deck extends React.Component {
     const { cards } = this.props
     const { cardsDrawn } = this.state
     const isLastShot = cardsDrawn >= cards.length
+    const card = cards[cardsDrawn - 1] || {}
 
-    this.cameraView.shot()
+    if (card.src) {
+      this.handleShot(card.src)
+    } else {
+      this.cameraView.shot()
+    }
 
-    if (isLastShot) this.stream.getTracks()[0].stop()
+    if (isLastShot) this.stream && this.stream.getTracks()[0].stop()
   }
 
   handleShot = dataUrl => {

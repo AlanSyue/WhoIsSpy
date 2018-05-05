@@ -1,9 +1,14 @@
 export default class Card {
   constructor ({ question, src, type }) {
+    this.drawn = false
     this.question = question
-    this.type = type
-    this.src = src
     this.revealed = false
+    this.src = src
+    this.type = type
+  }
+
+  draw () {
+    this.drawn = true
   }
 
   reveal () {

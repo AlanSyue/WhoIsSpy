@@ -36,8 +36,10 @@ export default class GamePage extends React.Component {
 
     this.state = {
       cards: [],
+      resetting: false,
       showDeck: true,
-      showForgetIndex: -1
+      showForgetIndex: -1,
+      showGGDialog: ''
     }
   }
 
@@ -47,22 +49,27 @@ export default class GamePage extends React.Component {
 
   componentWillReceiveProps = nextProps => {
     if (this.props.question.loyal !== nextProps.question.loyal) {
-      this.initialCards(nextProps)
+      const isReplay = !!(this.state.cards[0] || {}).src
+      this.initialCards(nextProps, isReplay)
     }
   }
 
   render = () => {
-    const { cards, showDeck, showForgetIndex } = this.state
+    const { query } = this.props
+    const { cards, resetting, showDeck, showForgetIndex, showGGDialog } = this.state
 
-    if (!cards.length) return null
+    if (!cards.length || resetting) return null
 
     return (
       <Container>
         <PlayerGallery
           cards={cards}
+          query={query}
           showFooter={!showDeck}
+          showGGDialog={showGGDialog}
           onExecute={this.handleExecute}
-          onForget={this.handleForget}/>
+          onForget={this.handleForget}
+          onReplay={this.handleReplay}/>
         <Deck
           cards={cards}
           showDeck={showDeck}
@@ -76,6 +83,7 @@ export default class GamePage extends React.Component {
   handleShot = ({ dataUrl, index }) => {
     const { cards } = this.state
 
+    cards[index].draw()
     cards[index].setSrc(dataUrl)
 
     this.setState({ cards })
@@ -102,13 +110,30 @@ export default class GamePage extends React.Component {
     this.setState({ cards }, this.judgeGame)
   }
 
-  initialCards = ({ query: { loyal, spy, whiteboard }, question }) => {
+  handleReplay = e => {
+    this.setState({
+      resetting: true,
+      showDeck: true,
+      showForgetIndex: -1,
+      showGGDialog: ''
+    }, () => {
+      this.setState({ resetting: false })
+      this.props.getQuestionAsync({ prevLoyal: this.props.question.loyal })
+    })
+  }
+
+  initialCards = ({ query: { loyal, spy, whiteboard }, question }, persistPhoto) => {
     const cards = []
     const pushCard = (question, type) => cards.push(new Card({ question, type }))
 
     range(loyal).map(() => pushCard(question.loyal, 'loyal'))
     range(spy).map(() => pushCard(question.spy, 'spy'))
     range(whiteboard).map(() => pushCard(locale('game.whiteboard'), 'whiteboard'))
+
+    if (persistPhoto) {
+      const photos = shuffle(this.state.cards.map(card => card.src))
+      cards.forEach((card, index) => card.setSrc(photos[index]))
+    }
 
     this.setState({ cards: shuffle(cards) })
   }
@@ -119,13 +144,7 @@ export default class GamePage extends React.Component {
     const revealedLoyals = cards.reduce((count, card) => count + (card.revealed && card.type === 'loyal'), 0)
     const revealedSpys = cards.reduce((count, card) => count + (card.revealed && card.type === 'spy'), 0)
 
-    if (revealedSpys >= query.spy) {
-      console.log('Loyals win!');
-      return
-    }
-    if (revealedLoyals >= query.loyal) {
-      console.log('Spys win!');
-      return
-    }
+    if (revealedSpys >= query.spy) return this.setState({ showGGDialog: 'loyal' })
+    if (revealedLoyals >= query.loyal) return this.setState({ showGGDialog: 'spy' })
   }
 }

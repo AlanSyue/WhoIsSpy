@@ -15,8 +15,9 @@ export default {
   // handle state changes with impure functions.
   // use async/await for async actions
   effects: {
-    async getQuestionAsync(payload, rootState) {
-      const question = await fetch('/v1/questions/random').then(res => res.json())
+    async getQuestionAsync(payload = {}, rootState) {
+      const question = await fetch(`/v1/questions/random` + (payload.prevLoyal ? `?prevLoyal=${payload.prevLoyal}` : ''))
+        .then(res => res.json())
 
       this.getQuestion(question)
     }

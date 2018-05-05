@@ -4,8 +4,11 @@ const DICTIONARY = {
     execute: '處決',
     forget: '忘詞',
     loyal: '平民',
+    menu: '主目錄',
+    replay: '重玩',
     spy: '臥底',
-    whiteboard: '白板'
+    whiteboard: '白板',
+    win: '獲勝'
   },
   menu: {
     player: '玩家',

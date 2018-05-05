@@ -11,10 +11,11 @@ const Button = styled.button`
   cursor: pointer;
   border: none;
   outline: none;
+  white-space: nowrap;
   user-select: none;
   -webkit-tap-highlight-color: ${theme.widgetActive};
   opacity: ${props => props.disable ? 0.2 : 1};
-  pointer-events: ${props => props.disable ? 'none' : 'all'};
+  pointer-events: ${props => props.disable ? 'none' : 'inherit'};
   transition: opacity .3s cubic-bezier(.4, 0, .2, 1);
 
   :active {

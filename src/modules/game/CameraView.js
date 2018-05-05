@@ -32,12 +32,17 @@ const Video = styled.video`
   height: 100%;
 `
 const Img = styled.img`
-  height: 100px;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  height: 100%;
 `
 
 export default class CameraView extends React.Component {
   static propTypes = {
-    stream: PropTypes.object.isRequired,
+    src: PropTypes.string,
+    stream: PropTypes.object,
     onShot: PropTypes.func.isRequired
   }
 
@@ -55,20 +60,24 @@ export default class CameraView extends React.Component {
   }
 
   render = () => {
+    const { src } = this.props
+
     return (
       <Container>
         <Wrapper>
           <Body>
-            <Video innerRef={ref => { this.video = ref }} autoplay/>
+            {src
+              ? <Img src={src}/>
+              : <Video innerRef={ref => { this.video = ref }} autoplay/>
+            }
           </Body>
         </Wrapper>
-        <Img innerRef={ref => { this.img = ref }}/>
       </Container>
     )
   }
 
   shot = () => {
-    if (!this.video.srcObject) return
+    if (!this.video || !this.video.srcObject) return
 
     const { onShot } = this.props
     const canvas = document.createElement('canvas')

@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import styled from 'styled-components'
 
 import Button from '~/modules/common/Button'
+import Dialog from '~/modules/common/Dialog'
 
 import locale from '~/constants/locale'
 import theme from '~/constants/theme'
@@ -27,10 +28,10 @@ const Footer = styled.div`
   align-items: center;
 `
 const FooterButton = styled(Button)`
-  padding: 16px 32px;
+  padding: 6% 10%;
 
   :first-child {
-    margin-right: 40px;
+    margin-right: 20px;
   }
 `
 const PlayerContainer = styled.div``
@@ -79,13 +80,35 @@ const PlayerRevealType = PlayerNumber.extend`
   width: auto;
   padding: 0 10px;
 `
+const GGContainer = styled.div`
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
+  background-color: ${theme.primary};
+  border-radius: 10px;
+  padding: 20px;
+  width: 80vw;
+`
+const GGTitle = styled.p`
+  color: ${theme.accent};
+  font-size: 50px;
+  font-weight: bold;
+  text-align: center;
+`
+const GGGallery = Gallery.extend`
+  margin-top: 20px;
+`
+const GGFooter = Footer.extend`
+  margin: 30px 0 10px;
+`
 
 export default class PlayerGallery extends React.Component {
   static propTypes = {
     cards: PropTypes.array.isRequired,
+    query: PropTypes.object.isRequired,
     showFooter: PropTypes.bool,
+    showGGDialog: PropTypes.string,
     onExecute: PropTypes.func,
-    onForget: PropTypes.func
+    onForget: PropTypes.func,
+    onReplay: PropTypes.func
   }
 
   constructor (props) {
@@ -117,13 +140,16 @@ export default class PlayerGallery extends React.Component {
             </FooterButton>
           </Footer>
         )}
+        {this.renderGGDialog()}
       </Container>
     )
   }
 
-  renderPlayer = ({ revealed, src, type }, index) => {
+  renderPlayer = ({ drawn, revealed, src, type }, index, highlight) => {
     const { selectedIndex } = this.state
-    const selected = (index === selectedIndex || selectedIndex === -1) && !revealed
+    const selected = (index === selectedIndex || selectedIndex === -1) && !revealed || highlight === true
+
+    if (!drawn) return null
 
     return (
       <PlayerContainer key={index}>
@@ -143,6 +169,36 @@ export default class PlayerGallery extends React.Component {
           )}
         </PlayerWrapper>
       </PlayerContainer>
+    )
+  }
+
+  renderGGDialog = () => {
+    const { cards, query, showGGDialog, onReplay } = this.props
+
+    return (
+      <Dialog show={!!showGGDialog}>
+        <GGContainer>
+          <GGTitle>
+            {locale(`game.${showGGDialog}`) + locale('game.win')}
+          </GGTitle>
+          <GGGallery numberOfColumns={query.spy + query.whiteboard <= 1 ? 1 : 2}>
+            {cards.map((card, index) => [ 'spy', 'whiteboard' ].includes(card.type) && (
+              this.renderPlayer({
+                ...card,
+                revealed: true
+              }, index, true)
+            ))}
+          </GGGallery>
+          <GGFooter>
+            <FooterButton onClick={onReplay}>
+              {locale('game.replay')}
+            </FooterButton>
+            <FooterButton onClick={() => location.href = '/'}>
+              {locale('game.menu')}
+            </FooterButton>
+          </GGFooter>
+        </GGContainer>
+      </Dialog>
     )
   }
 

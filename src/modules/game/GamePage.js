@@ -23,12 +23,14 @@ export default class GamePage extends React.Component {
     loading: PropTypes.bool,
     query: PropTypes.object.isRequired,
     question: PropTypes.object.isRequired,
-    getQuestionAsync: PropTypes.func.isRequired
+    getQuestionAsync: PropTypes.func.isRequired,
+    resetQuestion: PropTypes.func.isRequired
   }
 
   static defaultProps = {
     query: {},
-    getQuestionAsync: noop
+    getQuestionAsync: noop,
+    resetQuestion: noop
   }
 
   constructor (props) {
@@ -47,34 +49,41 @@ export default class GamePage extends React.Component {
     this.props.getQuestionAsync()
   }
 
+  componentWillUnmount = () => {
+    this.props.resetQuestion()
+  }
+
   componentWillReceiveProps = nextProps => {
     if (this.props.question.loyal !== nextProps.question.loyal) {
-      const isReplay = !!(this.state.cards[0] || {}).src
-      this.initialCards(nextProps, isReplay)
+      const persistPhoto = this.state.cards.reduce((res, card) => res && !!card.src, true)
+      this.initialCards(nextProps, persistPhoto)
     }
   }
 
   render = () => {
-    const { query } = this.props
+    const { query, question } = this.props
     const { cards, resetting, showDeck, showForgetIndex, showGGDialog } = this.state
 
     if (!cards.length || resetting) return null
 
     return (
-      <Container>
+      <Container onClick={e => e.preventDefault()}>
         <PlayerGallery
           cards={cards}
           query={query}
+          question={question}
           showFooter={!showDeck}
           showGGDialog={showGGDialog}
           onExecute={this.handleExecute}
           onForget={this.handleForget}
           onReplay={this.handleReplay}/>
         <Deck
+          ref={ref => { this.deckRef = ref }}
           cards={cards}
           showDeck={showDeck}
           showForgetIndex={showForgetIndex}
           onForgetContainerClick={this.handleForgetContainerClick}
+          onReplay={this.handleReplay}
           onShot={this.handleShot}/>
       </Container>
     )
@@ -111,14 +120,16 @@ export default class GamePage extends React.Component {
   }
 
   handleReplay = e => {
+    this.deckRef && this.deckRef.closeCamera()
+
     this.setState({
       resetting: true,
       showDeck: true,
       showForgetIndex: -1,
       showGGDialog: ''
-    }, () => {
+    }, async () => {
+      await this.props.getQuestionAsync({ prevLoyal: this.props.question.loyal })
       this.setState({ resetting: false })
-      this.props.getQuestionAsync({ prevLoyal: this.props.question.loyal })
     })
   }
 

@@ -93,17 +93,24 @@ const DrawnCardContent = styled.div`
   align-items: center;
   justify-content: center;
 `
-const ConfirmButton = styled(Button)`
+const DrawnCardFooter = styled.div`
   position: absolute;
   top: calc(100% + 30px);
   left: 50%;
   transform: translateX(-50%);
-  padding: 16px 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `
-const ButtonContent = styled.p`
+const FooterButton = styled(Button)`
+  padding: 16px 20px;
   font-size: 20px;
   line-height: 1;
   user-select: none;
+
+  :first-child {
+    margin-right: 20px;
+  }
 `
 const ForgetCardContainer = styled.div`
   position: absolute;
@@ -134,6 +141,7 @@ export default class Deck extends React.Component {
     showDeck: PropTypes.bool,
     showForgetIndex: PropTypes.number,
     onForgetContainerClick: PropTypes.func.isRequired,
+    onReplay: PropTypes.func.isRequired,
     onShot: PropTypes.func.isRequired
   }
 
@@ -147,7 +155,7 @@ export default class Deck extends React.Component {
     this.cardsRef = []
     this.cameraView = null
 
-    this.isReplay = !!(props.cards[0] || {}).src
+    this.persistPhoto = props.cards.reduce((res, card) => res && !!card.src, true)
 
     this.state = {
       cardsDrawn: 0,
@@ -157,11 +165,16 @@ export default class Deck extends React.Component {
   }
 
   componentDidMount = () => {
-    if (!this.isReplay && navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+    if (!this.persistPhoto && navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
       navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {
         this.stream = stream
+
+        // forceUpdate to get DrawnCardBody CameraView ref
+        this.forceUpdate()
       }).catch(e => {
+        alert(locale('game.alertCameraError') + '\n' + e)
         console.log(e)
+        location.href = '/'
       })
     }
   }
@@ -197,13 +210,13 @@ export default class Deck extends React.Component {
   }
 
   renderDrawnCard = () => {
-    const { cards } = this.props
+    const { cards, onReplay } = this.props
     const { cardsDrawn, drawnCardDim, showDrawnCardContent } = this.state
     const card = cards[cardsDrawn - 1] || {}
 
     return (
       <DrawnCard drawnCardDim={drawnCardDim}>
-        {(this.isReplay || this.stream) && showDrawnCardContent && (
+        {(this.persistPhoto || this.stream) && showDrawnCardContent && (
           <React.Fragment>
             <DrawnCardBody>
               <CameraView
@@ -215,11 +228,14 @@ export default class Deck extends React.Component {
                 {card.question || locale('game.whiteboard')}
               </DrawnCardContent>
             </DrawnCardBody>
-            <ConfirmButton>
-              <ButtonContent onClick={this.handleConfirmButtonClick}>
+            <DrawnCardFooter>
+              <FooterButton onClick={this.handleConfirmButtonClick}>
                 {locale('game.confirmCard')}
-              </ButtonContent>
-            </ConfirmButton>
+              </FooterButton>
+              <FooterButton onClick={onReplay}>
+                {locale('game.replay')}
+              </FooterButton>
+            </DrawnCardFooter>
           </React.Fragment>
         )}
       </DrawnCard>
@@ -281,7 +297,10 @@ export default class Deck extends React.Component {
           }
         })
 
-        setTimeout(() => requestAnimationFrame(() => this.setState({ showDrawnCardContent: true })), 500)
+        setTimeout(() => requestAnimationFrame(() => {
+          this.setState({ showDrawnCardContent: true })
+          this.cameraView.playStream()
+        }), 500)
       }))
     }))
   }
@@ -298,7 +317,7 @@ export default class Deck extends React.Component {
       this.cameraView.shot()
     }
 
-    if (isLastShot) this.stream && this.stream.getTracks()[0].stop()
+    if (isLastShot) this.closeCamera()
   }
 
   handleShot = dataUrl => {
@@ -316,5 +335,9 @@ export default class Deck extends React.Component {
       },
       showDrawnCardContent: false
     })
+  }
+
+  closeCamera = () => {
+    this.stream && this.stream.getTracks()[0].stop()
   }
 }

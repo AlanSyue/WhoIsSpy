@@ -20,6 +20,13 @@ export default {
         .then(res => res.json())
 
       this.getQuestion(question)
+    },
+
+    resetQuestion() {
+      this.getQuestion({
+        loyal: '',
+        spy: ''
+      })
     }
   }
 }

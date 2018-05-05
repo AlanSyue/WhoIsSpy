@@ -83,8 +83,13 @@ export default class Switch extends React.Component {
     const { width } = this.state
 
     return (
-      <Container className={className}>
-        <Checkbox type='checkbox' border={border} checked={value} onChange={this.handleChange}/>
+      <Container className={className} onClick={e => { this.checkbox.click() }}>
+        <Checkbox
+          innerRef={ref => { this.checkbox = ref }}
+          type='checkbox'
+          border={border}
+          checked={value}
+          onChange={this.handleChange}/>
         <Slider>
           <RockerContainer border={border} width={width}>
             <RockerShim src={this.transparentSrc}/>

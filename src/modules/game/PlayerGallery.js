@@ -14,6 +14,7 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
 `
+const GalleryContainer = styled.div``
 const Gallery = styled.div`
   position: relative;
   width: 100%;
@@ -28,13 +29,16 @@ const Footer = styled.div`
   align-items: center;
 `
 const FooterButton = styled(Button)`
-  padding: 6% 10%;
+  margin-right: 20px;
+  padding: 12px 20px;
 
-  :first-child {
-    margin-right: 20px;
+  :last-child {
+    margin-right: 0;
   }
 `
-const PlayerContainer = styled.div``
+const PlayerContainer = styled.div`
+  width: 100%;
+`
 const PlayerWrapper = styled.div`
   padding-bottom: 100%;
   width: 100%;
@@ -93,6 +97,17 @@ const GGTitle = styled.p`
   font-weight: bold;
   text-align: center;
 `
+const GGSubTitle = styled.div`
+  color: ${theme.textPrimary};
+  font-size: 20px;
+  margin: 10px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`
+const GGVS = styled.div`
+  margin: 0 10px;
+`
 const GGGallery = Gallery.extend`
   margin-top: 20px;
 `
@@ -104,6 +119,7 @@ export default class PlayerGallery extends React.Component {
   static propTypes = {
     cards: PropTypes.array.isRequired,
     query: PropTypes.object.isRequired,
+    question: PropTypes.object.isRequired,
     showFooter: PropTypes.bool,
     showGGDialog: PropTypes.string,
     onExecute: PropTypes.func,
@@ -120,16 +136,18 @@ export default class PlayerGallery extends React.Component {
   }
 
   render = () => {
-    const { cards, showFooter, onExecute, onForget } = this.props
+    const { cards, showFooter, onExecute, onForget, onReplay } = this.props
     const { selectedIndex } = this.state
-    const numberOfColumns = 2 + Math.ceil((cards.length - 4) / 8)
+    const numberOfColumns = cards.length >= 10 ? 4 : cards.length >= 5 ? 3 : 2
     const disableButton = selectedIndex === -1
 
     return (
       <Container onClick={this.handleContainerClick}>
-        <Gallery numberOfColumns={numberOfColumns}>
-          {cards.map(this.renderPlayer)}
-        </Gallery>
+        <GalleryContainer>
+          <Gallery numberOfColumns={numberOfColumns}>
+            {cards.map(this.renderPlayer)}
+          </Gallery>
+        </GalleryContainer>
         {showFooter && (
           <Footer>
             <FooterButton disable={disableButton} onClick={onExecute(selectedIndex)}>
@@ -137,6 +155,9 @@ export default class PlayerGallery extends React.Component {
             </FooterButton>
             <FooterButton disable={disableButton} onClick={onForget(selectedIndex)}>
               {locale('game.forget')}
+            </FooterButton>
+            <FooterButton onClick={onReplay}>
+              {locale('game.replay')}
             </FooterButton>
           </Footer>
         )}
@@ -173,7 +194,7 @@ export default class PlayerGallery extends React.Component {
   }
 
   renderGGDialog = () => {
-    const { cards, query, showGGDialog, onReplay } = this.props
+    const { cards, query, question, showGGDialog, onReplay } = this.props
 
     return (
       <Dialog show={!!showGGDialog}>
@@ -181,6 +202,13 @@ export default class PlayerGallery extends React.Component {
           <GGTitle>
             {locale(`game.${showGGDialog}`) + locale('game.win')}
           </GGTitle>
+          <GGSubTitle>
+            {question.loyal}
+            <GGVS>
+              VS
+            </GGVS>
+            {question.spy}
+          </GGSubTitle>
           <GGGallery numberOfColumns={query.spy + query.whiteboard <= 1 ? 1 : 2}>
             {cards.map((card, index) => [ 'spy', 'whiteboard' ].includes(card.type) && (
               this.renderPlayer({

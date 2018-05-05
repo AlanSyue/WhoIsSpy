@@ -8,6 +8,9 @@ const Container = styled.div`
   justify-content: center;
   padding: 10% 10% 0 10%;
 `
+const InnerContainer = styled.div`
+  width: 100%;
+`
 const Wrapper = styled.div`
   position: relative;
   padding-bottom: 100%;
@@ -30,6 +33,8 @@ const Video = styled.video`
   left: 50%;
   transform: translateX(-50%);
   height: 100%;
+  width: 100%;
+  object-fit: cover;
 `
 const Img = styled.img`
   position: absolute;
@@ -52,28 +57,30 @@ export default class CameraView extends React.Component {
     this.video = null
   }
 
-  componentDidMount = () => {
-    if (this.video) {
-      this.video.srcObject = this.props.stream
-      this.video.play()
-    }
-  }
-
   render = () => {
     const { src } = this.props
 
     return (
       <Container>
-        <Wrapper>
-          <Body>
-            {src
-              ? <Img src={src}/>
-              : <Video innerRef={ref => { this.video = ref }} autoplay/>
-            }
-          </Body>
-        </Wrapper>
+        <InnerContainer>
+          <Wrapper>
+            <Body>
+              {src
+                ? <Img src={src}/>
+                : <Video innerRef={ref => { if (ref) this.video = ref }} playsInline/>
+              }
+            </Body>
+          </Wrapper>
+        </InnerContainer>
       </Container>
     )
+  }
+
+  playStream = () => {
+    if (this.video) {
+      if (!this.video.srcObject) this.video.srcObject = this.props.stream
+      this.video.play()
+    }
   }
 
   shot = () => {

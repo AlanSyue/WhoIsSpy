@@ -88,7 +88,7 @@ export default class MenuPage extends React.Component {
     const maxSpy = Math.ceil(player / 4) - whiteboard
 
     return (
-      <Container>
+      <Container onClick={e => e.preventDefault()}>
         <Title>{locale('menu.title')}</Title>
         <Section>
           <StyledMenuPlayerChart

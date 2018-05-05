@@ -1,5 +1,6 @@
 const DICTIONARY = {
   game: {
+    alertCameraError: '請開啟相機權限',
     confirmCard: '我記住了',
     execute: '處決',
     forget: '忘詞',

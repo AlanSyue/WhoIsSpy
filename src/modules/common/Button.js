@@ -9,6 +9,7 @@ const Button = styled.button`
   border-radius: 4px;
   color: ${theme.textPrimary};
   cursor: pointer;
+  font-size: 20px;
   border: none;
   outline: none;
   white-space: nowrap;

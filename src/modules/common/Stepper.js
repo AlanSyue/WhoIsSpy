@@ -1,7 +1,7 @@
 import clamp from 'lodash/clamp'
 import noop from 'lodash/noop'
 import PropTypes from 'prop-types'
-import styled from 'styled-components'
+import styled, { css } from 'styled-components'
 
 import theme from '~/constants/theme'
 
@@ -21,20 +21,42 @@ const Wrapper = styled.div`
   display: flex;
   overflow: hidden;
 `
-const Button = styled.button`
-  outline: none;
-  border: none;
-  background-color: transparent;
+const Button = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
   height: 100%;
   flex: 1;
   color: #FFFFFF;
-  font-size: 16px;
   transition: .4s;
   cursor: ${props => props.disabled ? 'default' : 'pointer'};
   opacity: ${props => props.disabled ? 0.1 : 1};
 
   :active {
     background-color: ${theme.widgetActive};
+  }
+`
+const Bar = css`
+  background-color: ${theme.textPrimary};
+  position: relative;
+  height: 30%;
+  width: 2px;
+`
+const Minus = styled.div`
+  ${Bar};
+  transform: rotateZ(90deg);
+`
+const Cross = styled.div`
+  ${Bar};
+
+  :after {
+    content: '';
+    top: 0;
+    left: 0;
+    ${Bar};
+    height: 100%;
+    position: absolute;
+    transform: rotateZ(90deg);
   }
 `
 
@@ -80,8 +102,12 @@ export default class Stepper extends React.Component {
     return (
       <Container className={className}>
         <Wrapper>
-          <Button disabled={value <= min} onClick={this.handleChange(-1)}>-</Button>
-          <Button disabled={value >= max} onClick={this.handleChange(+1)}>+</Button>
+          <Button disabled={value <= min} onClick={this.handleChange(-1)}>
+            <Minus/>
+          </Button>
+          <Button disabled={value >= max} onClick={this.handleChange(+1)}>
+            <Cross/>
+          </Button>
         </Wrapper>
       </Container>
     )

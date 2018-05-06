@@ -172,7 +172,13 @@ export default class Deck extends React.Component {
   }
 
   componentDidMount = () => {
-    if (!this.persistPhoto && navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+    // https://stackoverflow.com/questions/46228218/how-to-access-camera-on-ios11-home-screen-web-app
+    // navigator.getUserMedia does not work in PWA with <meta name='apple-mobile-web-app-capable' content='yes'/>
+    window.navigator.getUserMedia = navigator.getUserMedia || navigator.webKitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia
+
+    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+      if (this.persistPhoto) return
+
       navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {
         this.stream = stream
 
@@ -183,6 +189,9 @@ export default class Deck extends React.Component {
         console.log(e)
         location.href = '/'
       })
+    } else {
+      alert(navigator.mediaDevices + ' ' + (navigator.mediaDevices && navigator.mediaDevices.getUserMedia))
+      location.href = '/'
     }
   }
 

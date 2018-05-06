@@ -28,15 +28,19 @@ const Container = styled.div`
   align-items: center;
   justify-content: center;
 `
+const Icon = styled.img`
+  height: 160px;
+  margin-bottom: -40px;
+`
 const Title = styled.h1`
-  font-size: 60px;
+  font-size: 50px;
   font-weight: bold;
-  margin: 0 0 25px;
+  margin: 0;
   color: ${theme.accent};
   user-select: none;
 `
 const Section = styled.section`
-  margin: 12px 0;
+  margin: 6px 0;
 `
 const P = styled.p`
   font-size: 20px;
@@ -71,7 +75,7 @@ const StyledSwitch = styled(Switch)`
   margin-left: 10px;
 `
 const SubmitButton = styled(Button)`
-  margin-top: 20px;
+  margin-top: 10px;
   padding: 20px 28px;
 `
 
@@ -86,12 +90,35 @@ export default class MenuPage extends React.Component {
     }
   }
 
+  componentDidMount = () => {
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/serviceWorker.js').then(registration => {
+          // Registration successful
+        }, err => {
+          // Registration failed
+        })
+      })
+    }
+
+    window.addEventListener('beforeinstallprompt', e => {
+      e.userChoice.then(choiceResult => {
+        if (choiceResult.outcome == 'dismissed') {
+          // User cancelled home screen install
+        } else {
+          // User added to home screen
+        }
+      })
+    })
+  }
+
   render = () => {
     const { player, spy, whiteboard } = this.state
     const maxSpy = Math.ceil(player / 4) - whiteboard
 
     return (
       <Container onClick={e => e.preventDefault()}>
+        <Icon src='/img/spy.svg'/>
         <Title>{locale('menu.title')}</Title>
         <Section>
           <StyledMenuPlayerChart

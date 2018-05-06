@@ -8,7 +8,7 @@ import locale from '~/constants/locale'
 import theme from '~/constants/theme'
 
 const Container = styled.div`
-  padding: 20px 10px;
+  padding: 10px;
 `
 const Title = styled.div`
   color: ${theme.textPrimary};
@@ -18,13 +18,13 @@ const Title = styled.div`
 const Footer = styled.div`
   display: flex;
   justify-content: center;
-  margin-top: 30px;
+  margin-top: 20px;
 `
 const FooterButton = styled(Button)`
   padding: 16px 20px;
 
   :first-child {
-    margin-right: 30px;
+    margin-right: 20px;
   }
 `
 

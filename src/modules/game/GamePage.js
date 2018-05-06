@@ -78,10 +78,16 @@ export default class GamePage extends React.Component {
 
   componentDidMount = () => {
     this.props.getQuestionAsync()
+
+    window.addEventListener('click', this.handleCloseForgetCard, true)
   }
 
   componentWillUnmount = () => {
     this.props.resetQuestion()
+
+    clearTimeout(this.timeout)
+
+    window.removeEventListener('click', this.handleCloseForgetCard, true)
   }
 
   componentWillReceiveProps = nextProps => {
@@ -121,7 +127,6 @@ export default class GamePage extends React.Component {
           cards={cards}
           showDeck={showDeck}
           showForgetIndex={showForgetIndex}
-          onForgetContainerClick={this.handleForgetContainerClick}
           onShot={this.handleShot}/>
         <Alert
           show={showHomeAlert}
@@ -151,12 +156,14 @@ export default class GamePage extends React.Component {
     }
   }
 
-  handleForgetContainerClick = e => {
+  handleCloseForgetCard = e => {
     this.setState({ showForgetIndex: -1 })
   }
 
   handleForget = index => e => {
-    this.setState({ showForgetIndex: index })
+    this.setState({ showForgetIndex: index }, () => {
+      this.timeout = setTimeout(this.handleCloseForgetCard, 1000)
+    })
   }
 
   handleExecute = index => e => {

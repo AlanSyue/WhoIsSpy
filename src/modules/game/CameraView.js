@@ -80,13 +80,20 @@ export default class CameraView extends React.Component {
   }
 
   playStream = () => {
+    const { src, stream } = this.props
+
     if (this.video) {
-      if (!this.video.srcObject) this.video.srcObject = this.props.stream
+      if (!this.video.srcObject) this.video.srcObject = stream
 
-      const prom = this.video.play()
+      // no need to play video if src is given
+      const prom = src ? Promise.resolve() : this.video.play()
 
-      if (prom) prom.catch(console.log).then(() => this.ready = true)
+      if (prom) prom.catch(console.log).then(() => { this.ready = true })
+
+      return prom
     }
+
+    return Promise.resolve()
   }
 
   shot = () => {

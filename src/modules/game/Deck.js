@@ -89,6 +89,8 @@ const DrawnCardBody = styled.div`
   flex-direction: column;
   overflow: visible;
   border-radius: 13px;
+  opacity: ${props => props.show ? 1 : 0};
+  pointer-events: ${props => props.show ? 'inherit' : 'none'};
 `
 const DrawnCardContent = styled.div`
   color: ${theme.textDark};
@@ -109,8 +111,7 @@ const DrawnCardFooter = styled.div`
   align-items: center;
 `
 const FooterButton = styled(Button)`
-  padding: 16px 20px;
-  font-size: 24px;
+  padding: 20px 60px;
   line-height: 1;
   user-select: none;
 `
@@ -145,7 +146,6 @@ export default class Deck extends React.Component {
     cards: PropTypes.array.isRequired,
     showDeck: PropTypes.bool,
     showForgetIndex: PropTypes.number,
-    onForgetContainerClick: PropTypes.func.isRequired,
     onShot: PropTypes.func.isRequired
   }
 
@@ -184,12 +184,12 @@ export default class Deck extends React.Component {
   }
 
   render = () => {
-    const { cards, showDeck, showForgetIndex, onForgetContainerClick } = this.props
+    const { cards, showDeck, showForgetIndex } = this.props
     const { cardsDrawn } = this.state
     const showForget = showForgetIndex !== -1
 
     return (
-      <Container show={showDeck || showForget} onClick={showForget ? onForgetContainerClick : noop}>
+      <Container show={showDeck || showForget}>
         {showDeck && (
           <React.Fragment>
             <Wrapper>
@@ -220,9 +220,9 @@ export default class Deck extends React.Component {
 
     return (
       <DrawnCard drawnCardDim={drawnCardDim}>
-        {(this.persistPhoto || this.stream) && showDrawnCardContent && (
+        {(this.persistPhoto || this.stream) && (
           <React.Fragment>
-            <DrawnCardBody>
+            <DrawnCardBody show={showDrawnCardContent}>
               <CameraView
                 ref={ref => { this.cameraView = ref }}
                 src={card.src}
@@ -232,11 +232,13 @@ export default class Deck extends React.Component {
                 {card.question || locale('game.whiteboard')}
               </DrawnCardContent>
             </DrawnCardBody>
-            <DrawnCardFooter>
-              <FooterButton onClick={this.handleConfirmButtonClick}>
-                {locale('game.confirmCard')}
-              </FooterButton>
-            </DrawnCardFooter>
+            {showDrawnCardContent &&
+              <DrawnCardFooter>
+                <FooterButton onClick={this.handleConfirmButtonClick}>
+                  {locale('game.confirmCard')}
+                </FooterButton>
+              </DrawnCardFooter>
+            }
           </React.Fragment>
         )}
       </DrawnCard>
@@ -247,7 +249,7 @@ export default class Deck extends React.Component {
     <ForgetCardContainer>
       <ForgetCardWrapper>
         <CardBody>
-          <DrawnCardBody>
+          <DrawnCardBody show>
             <ForgetCardPhotoContainer>
               <ForgetCardPhoto src={card.src}/>
             </ForgetCardPhotoContainer>
@@ -263,7 +265,7 @@ export default class Deck extends React.Component {
   handleCardClick = e => {
     const { cardsDrawn, drawnCardDim } = this.state
 
-    if (drawnCardDim.height) return
+    if (drawnCardDim.height || !this.cameraView) return
 
     const rect = this.cardsRef[this.cardsRef.length - cardsDrawn - 1].getBoundingClientRect()
     const offset = Math.max(window.innerWidth - size.maxWindowSize, 0) / 2
@@ -299,9 +301,9 @@ export default class Deck extends React.Component {
           }
         })
 
-        setTimeout(() => requestAnimationFrame(() => {
+        setTimeout(() => requestAnimationFrame(async () => {
+          await this.cameraView.playStream()
           this.setState({ showDrawnCardContent: true })
-          this.cameraView.playStream()
         }), 500)
       }))
     }))

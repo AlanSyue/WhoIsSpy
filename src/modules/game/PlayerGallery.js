@@ -36,7 +36,7 @@ const Footer = styled.div`
 const FooterButton = styled(Button)`
   flex: 1;
   margin-right: 20px;
-  padding: 16px 0;
+  padding: 20px 0;
   max-width: 60%;
 
   :last-child {

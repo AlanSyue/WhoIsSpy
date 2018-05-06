@@ -31,7 +31,7 @@ const Footer = styled.div`
   justify-content: center;
   align-items: center;
   padding: 0 20px;
-  margin-top: 40px;
+  margin-top: 20px;
 `
 const FooterButton = styled(Button)`
   flex: 1;

@@ -8,6 +8,7 @@ import Alert from '~/modules/common/Alert'
 import Button from '~/modules/common/Button'
 import Card from './Card'
 import Deck from './Deck'
+import Loading from '~/modules/common/Loading'
 import PlayerGallery from './PlayerGallery'
 
 import locale from '~/constants/locale'
@@ -101,8 +102,6 @@ export default class GamePage extends React.Component {
     const { query, question } = this.props
     const { cards, resetting, showDeck, showForgetIndex, showGGDialog, showHomeAlert, showReplayAlert } = this.state
 
-    if (!cards.length || resetting) return null
-
     return (
       <Container onClick={e => e.preventDefault()}>
         <Header>
@@ -113,31 +112,38 @@ export default class GamePage extends React.Component {
             <HeaderButton src='/img/refresh.svg'/>
           </HeaderButtonContainer>
         </Header>
-        <PlayerGallery
-          cards={cards}
-          query={query}
-          question={question}
-          showFooter={!showDeck}
-          showGGDialog={showGGDialog}
-          onExecute={this.handleExecute}
-          onForget={this.handleForget}
-          onReplay={this.handleReplay}/>
-        <Deck
-          ref={ref => { this.deckRef = ref }}
-          cards={cards}
-          showDeck={showDeck}
-          showForgetIndex={showForgetIndex}
-          onShot={this.handleShot}/>
-        <Alert
-          show={showHomeAlert}
-          title={locale('game.alert.homeTitle')}
-          onCancel={this.toggleHomeAlert}
-          onConfirm={() => location.href = '/'}/>
-        <Alert
-          show={showReplayAlert}
-          title={locale('game.alert.replayTitle')}
-          onCancel={this.toggleReplayAlert}
-          onConfirm={this.handleReplay}/>
+        {!cards.length || resetting
+          ? <Loading/>
+          : (
+            <React.Fragment>
+              <PlayerGallery
+                cards={cards}
+                query={query}
+                question={question}
+                showFooter={!showDeck}
+                showGGDialog={showGGDialog}
+                onExecute={this.handleExecute}
+                onForget={this.handleForget}
+                onReplay={this.handleReplay}/>
+              <Deck
+                ref={ref => { this.deckRef = ref }}
+                cards={cards}
+                showDeck={showDeck}
+                showForgetIndex={showForgetIndex}
+                onShot={this.handleShot}/>
+              <Alert
+                show={showHomeAlert}
+                title={locale('game.alert.homeTitle')}
+                onCancel={this.toggleHomeAlert}
+                onConfirm={() => location.href = '/'}/>
+              <Alert
+                show={showReplayAlert}
+                title={locale('game.alert.replayTitle')}
+                onCancel={this.toggleReplayAlert}
+                onConfirm={this.handleReplay}/>
+            </React.Fragment>
+          )
+        }
       </Container>
     )
   }

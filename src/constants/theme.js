@@ -7,6 +7,8 @@ export default {
   whiteboard: '#CCC7B4',
   widget: 'rgba(255, 255, 255, 0.2)',
   widgetActive: 'rgba(255, 255, 255, 0.6)',
+  widgetDanger: 'rgba(161, 46, 49, 0.7)',
+  widgetDangerActive: 'rgba(161, 46, 49, 0.8)',
 
   textPrimary: '#FFFFFF',
   textDark: '#4A4A4A',

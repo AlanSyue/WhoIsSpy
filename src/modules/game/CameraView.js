@@ -15,6 +15,7 @@ const Wrapper = styled.div`
   position: relative;
   padding-bottom: 100%;
   width: 100%;
+  z-index: 1;
 `
 const Body = styled.div`
   position: absolute;
@@ -26,6 +27,7 @@ const Body = styled.div`
   border: 3px solid white;
   border-radius: 15px;
   overflow: hidden;
+  z-index: 0;
 `
 const Video = styled.video`
   position: absolute;
@@ -54,6 +56,7 @@ export default class CameraView extends React.Component {
   constructor (props) {
     super(props)
 
+    this.ready = false
     this.video = null
   }
 
@@ -79,12 +82,15 @@ export default class CameraView extends React.Component {
   playStream = () => {
     if (this.video) {
       if (!this.video.srcObject) this.video.srcObject = this.props.stream
-      this.video.play()
+
+      const prom = this.video.play()
+
+      if (prom) prom.catch(console.log).then(() => this.ready = true)
     }
   }
 
   shot = () => {
-    if (!this.video || !this.video.srcObject) return
+    if (!this.ready || !this.video || !this.video.srcObject) return
 
     const { onShot } = this.props
     const canvas = document.createElement('canvas')

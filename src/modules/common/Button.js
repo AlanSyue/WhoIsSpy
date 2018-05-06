@@ -5,7 +5,7 @@ import { Link } from '~/routes'
 import theme from '~/constants/theme'
 
 const Button = styled.button`
-  background-color: ${theme.widget};
+  background-color: ${props => props.theme === 'danger' ? theme.widgetDanger : theme.widget};
   border-radius: 4px;
   color: ${theme.textPrimary};
   cursor: pointer;
@@ -14,8 +14,8 @@ const Button = styled.button`
   outline: none;
   white-space: nowrap;
   user-select: none;
-  -webkit-tap-highlight-color: ${theme.widgetActive};
   opacity: ${props => props.disable ? 0.2 : 1};
+  -webkit-tap-highlight-color: ${props => props.theme === 'danger' ? theme.widgetDangerActive : theme.widgetActive};
   pointer-events: ${props => props.disable ? 'none' : 'inherit'};
   transition: opacity .3s cubic-bezier(.4, 0, .2, 1);
 
@@ -24,8 +24,8 @@ const Button = styled.button`
   }
 `
 
-const renderButton = ({ children, className, disable, onClick }) => <Button className={className} disable={disable} onClick={onClick}>{children}</Button>
+const renderButton = ({ children, className, disable, theme, onClick }) => <Button className={className} disable={disable} theme={theme} onClick={onClick}>{children}</Button>
 
-export default ({ children, className, disable, to, onClick }) => to && !disable
-  ? <Link to={to}><a>{renderButton({ children, className, onClick })}</a></Link>
-  : renderButton({ children, className, disable, onClick })
+export default ({ children, className, disable, theme, to, onClick }) => to && !disable
+  ? <Link to={to}><a>{renderButton({ children, className, theme, onClick })}</a></Link>
+  : renderButton({ children, className, disable, theme, onClick })

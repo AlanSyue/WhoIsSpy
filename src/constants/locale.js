@@ -1,12 +1,17 @@
 const DICTIONARY = {
   game: {
-    alertCameraError: '請開啟相機權限',
+    alert: {
+      cameraError: '請開啟相機權限',
+      cancel: '取消',
+      confirm: '確定',
+      homeTitle: '確定要離開遊戲？',
+      replayTitle: '確定要重新開始？'
+    },
     confirmCard: '我記住了',
     execute: '處決',
     forget: '忘詞',
     loyal: '平民',
-    menu: '主目錄',
-    replay: '重玩',
+    replay: '重新開始',
     spy: '臥底',
     whiteboard: '白板',
     win: '獲勝'

@@ -6,13 +6,11 @@ import Button from '~/modules/common/Button'
 import CameraView from './CameraView'
 
 import locale from '~/constants/locale'
+import size from '~/constants/size'
 import theme from '~/constants/theme'
 
-const cardBorderWidth = 4
-const cardWidth = '45vw'
-
 const Container = styled.div`
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: ${theme.dark};
   position: absolute;
   top: 0;
   left: 0;
@@ -30,7 +28,12 @@ const Wrapper = styled.div`
 `
 const CardContainer = styled.div.attrs({
   style: props => ({
-    transform: `translateX(calc((${cardWidth} - 10px) * ${props.shift}))`
+    transform: `translateX(calc((${
+      Math.min(
+        size.maxWindowSize * size.cardWidthRatio / 100,
+        window.innerWidth * size.cardWidthRatio / 100
+      )
+    }px - 10px) * ${props.shift}))`
   })
 })`
   position: absolute;
@@ -40,10 +43,13 @@ const CardWrapper = styled.div`
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
   position: relative;
   background-color: ${theme.accent};
-  border: ${cardBorderWidth}px solid white;
+  border: ${size.cardBorderWidth}px solid white;
   border-radius: 17px;
   padding-bottom: 140%;
-  width: ${cardWidth};
+  width: ${Math.min(
+    size.maxWindowSize * size.cardWidthRatio / 100,
+    typeof window !== 'undefined' && window.innerWidth * size.cardWidthRatio / 100
+  )}px;
   transform: translate(-50%, -50%);
   overflow: hidden;
   cursor: pointer;
@@ -104,13 +110,9 @@ const DrawnCardFooter = styled.div`
 `
 const FooterButton = styled(Button)`
   padding: 16px 20px;
-  font-size: 20px;
+  font-size: 24px;
   line-height: 1;
   user-select: none;
-
-  :first-child {
-    margin-right: 20px;
-  }
 `
 const ForgetCardContainer = styled.div`
   position: absolute;
@@ -120,7 +122,10 @@ const ForgetCardContainer = styled.div`
 `
 const ForgetCardWrapper = CardWrapper.extend`
   box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
-  width: calc(${cardWidth} * 1.5);
+  width: calc(${Math.min(
+    size.maxWindowSize * size.cardWidthRatio / 100,
+    typeof window !== 'undefined' && window.innerWidth * size.cardWidthRatio / 100
+  )}px * 1.5);
   transform: none;
   cursor: default;
   overflow: visible;
@@ -141,7 +146,6 @@ export default class Deck extends React.Component {
     showDeck: PropTypes.bool,
     showForgetIndex: PropTypes.number,
     onForgetContainerClick: PropTypes.func.isRequired,
-    onReplay: PropTypes.func.isRequired,
     onShot: PropTypes.func.isRequired
   }
 
@@ -172,7 +176,7 @@ export default class Deck extends React.Component {
         // forceUpdate to get DrawnCardBody CameraView ref
         this.forceUpdate()
       }).catch(e => {
-        alert(locale('game.alertCameraError') + '\n' + e)
+        alert(locale('game.alert.cameraError') + '\n' + e)
         console.log(e)
         location.href = '/'
       })
@@ -210,7 +214,7 @@ export default class Deck extends React.Component {
   }
 
   renderDrawnCard = () => {
-    const { cards, onReplay } = this.props
+    const { cards } = this.props
     const { cardsDrawn, drawnCardDim, showDrawnCardContent } = this.state
     const card = cards[cardsDrawn - 1] || {}
 
@@ -231,9 +235,6 @@ export default class Deck extends React.Component {
             <DrawnCardFooter>
               <FooterButton onClick={this.handleConfirmButtonClick}>
                 {locale('game.confirmCard')}
-              </FooterButton>
-              <FooterButton onClick={onReplay}>
-                {locale('game.replay')}
               </FooterButton>
             </DrawnCardFooter>
           </React.Fragment>
@@ -265,6 +266,7 @@ export default class Deck extends React.Component {
     if (drawnCardDim.height) return
 
     const rect = this.cardsRef[this.cardsRef.length - cardsDrawn - 1].getBoundingClientRect()
+    const offset = Math.max(window.innerWidth - size.maxWindowSize, 0) / 2
 
     this.setState({
       drawnCardDim: {
@@ -275,17 +277,17 @@ export default class Deck extends React.Component {
       this.setState({
         cardsDrawn: this.state.cardsDrawn + 1,
         drawnCardDim: {
-          height: rect.height + cardBorderWidth * 2,
-          width: rect.width + cardBorderWidth * 2,
-          top: rect.top - cardBorderWidth,
-          left: rect.left - cardBorderWidth
+          height: rect.height + size.cardBorderWidth * 2,
+          width: rect.width + size.cardBorderWidth * 2,
+          top: rect.top - size.cardBorderWidth,
+          left: rect.left - size.cardBorderWidth - offset
         }
       }, () => requestAnimationFrame(() => {
         const newDim = this.state.drawnCardDim
         const height = newDim.height * 1.5
         const width = newDim.width * 1.5
-        const top = (window.innerHeight - height) / 2
-        const left = (window.innerWidth - width) / 2
+        const top = (window.innerHeight - height - 82 + 50) / 2
+        const left = (window.innerWidth - width) / 2 - offset
 
         this.setState({
           drawnCardDim: {

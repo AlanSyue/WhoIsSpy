@@ -4,11 +4,14 @@ import range from 'lodash/range'
 import shuffle from 'lodash/shuffle'
 import styled from 'styled-components'
 
+import Alert from '~/modules/common/Alert'
+import Button from '~/modules/common/Button'
 import Card from './Card'
 import Deck from './Deck'
 import PlayerGallery from './PlayerGallery'
 
 import locale from '~/constants/locale'
+import size from '~/constants/size'
 import theme from '~/constants/theme'
 
 const Container = styled.div`
@@ -16,6 +19,32 @@ const Container = styled.div`
   color: white;
   height: 100%;
   width: 100%;
+  padding-top: ${size.headerHeight};
+  max-width: ${size.maxWindowSize}px;
+  margin: auto;
+`
+const Header = styled.div`
+  height: ${size.headerHeight};
+  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: ${size.maxWindowSize}px;
+`
+const HeaderButtonContainer = styled.div`
+  height: 100%;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+`
+const HeaderButton = styled.img`
+  height: 20px;
 `
 
 export default class GamePage extends React.Component {
@@ -41,7 +70,9 @@ export default class GamePage extends React.Component {
       resetting: false,
       showDeck: true,
       showForgetIndex: -1,
-      showGGDialog: ''
+      showGGDialog: '',
+      showHomeAlert: false,
+      showReplayAlert: false
     }
   }
 
@@ -62,12 +93,20 @@ export default class GamePage extends React.Component {
 
   render = () => {
     const { query, question } = this.props
-    const { cards, resetting, showDeck, showForgetIndex, showGGDialog } = this.state
+    const { cards, resetting, showDeck, showForgetIndex, showGGDialog, showHomeAlert, showReplayAlert } = this.state
 
     if (!cards.length || resetting) return null
 
     return (
       <Container onClick={e => e.preventDefault()}>
+        <Header>
+          <HeaderButtonContainer onClick={this.toggleHomeAlert}>
+            <HeaderButton src='/img/home.svg'/>
+          </HeaderButtonContainer>
+          <HeaderButtonContainer onClick={this.toggleReplayAlert}>
+            <HeaderButton src='/img/refresh.svg'/>
+          </HeaderButtonContainer>
+        </Header>
         <PlayerGallery
           cards={cards}
           query={query}
@@ -83,8 +122,17 @@ export default class GamePage extends React.Component {
           showDeck={showDeck}
           showForgetIndex={showForgetIndex}
           onForgetContainerClick={this.handleForgetContainerClick}
-          onReplay={this.handleReplay}
           onShot={this.handleShot}/>
+        <Alert
+          show={showHomeAlert}
+          title={locale('game.alert.homeTitle')}
+          onCancel={this.toggleHomeAlert}
+          onConfirm={() => location.href = '/'}/>
+        <Alert
+          show={showReplayAlert}
+          title={locale('game.alert.replayTitle')}
+          onCancel={this.toggleReplayAlert}
+          onConfirm={this.handleReplay}/>
       </Container>
     )
   }
@@ -126,11 +174,21 @@ export default class GamePage extends React.Component {
       resetting: true,
       showDeck: true,
       showForgetIndex: -1,
-      showGGDialog: ''
+      showGGDialog: '',
+      showHomeAlert: false,
+      showReplayAlert: false
     }, async () => {
       await this.props.getQuestionAsync({ prevLoyal: this.props.question.loyal })
       this.setState({ resetting: false })
     })
+  }
+
+  toggleHomeAlert = () => {
+    this.setState({ showHomeAlert: !this.state.showHomeAlert })
+  }
+
+  toggleReplayAlert = () => {
+    this.setState({ showReplayAlert: !this.state.showReplayAlert })
   }
 
   initialCards = ({ query: { loyal, spy, whiteboard }, question }, persistPhoto) => {

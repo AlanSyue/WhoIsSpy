@@ -6,6 +6,7 @@ import Button from '~/modules/common/Button'
 import Dialog from '~/modules/common/Dialog'
 
 import locale from '~/constants/locale'
+import size from '~/constants/size'
 import theme from '~/constants/theme'
 
 const Container = styled.div`
@@ -13,24 +14,30 @@ const Container = styled.div`
   width: 100%;
   display: flex;
   flex-direction: column;
+  justify-content: center;
 `
-const GalleryContainer = styled.div``
+const GalleryContainer = styled.div`
+`
 const Gallery = styled.div`
   position: relative;
   width: 100%;
   display: grid;
   grid-template-columns: repeat(${props => props.numberOfColumns}, 1fr);
+  margin: auto;
 `
 const Footer = styled.div`
-  flex: 1;
   width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
+  padding: 0 20px;
+  margin-top: 40px;
 `
 const FooterButton = styled(Button)`
+  flex: 1;
   margin-right: 20px;
-  padding: 12px 20px;
+  padding: 16px 0;
+  max-width: 60%;
 
   :last-child {
     margin-right: 0;
@@ -72,7 +79,7 @@ const PlayerNumber = styled.div`
   color: white;
   font-size: 14px;
   line-height: 1;
-  border-radius: 100vh;
+  border-radius: 100%;
   opacity: 0.9;
   pointer-events: none;
 `
@@ -81,6 +88,7 @@ const PlayerRevealType = PlayerNumber.extend`
   color: ${props => theme[props.type === 'whiteboard' ? 'textDark' : 'textPrimary']};
   left: auto;
   right: 5%;
+  border-radius: 100vh;
   width: auto;
   padding: 0 10px;
 `
@@ -89,7 +97,8 @@ const GGContainer = styled.div`
   background-color: ${theme.primary};
   border-radius: 10px;
   padding: 20px;
-  width: 80vw;
+  width: 90vw;
+  max-width: ${size.maxWindowSize}px;
 `
 const GGTitle = styled.p`
   color: ${theme.accent};
@@ -110,9 +119,10 @@ const GGVS = styled.div`
 `
 const GGGallery = Gallery.extend`
   margin-top: 20px;
+  max-width: ${props => props.numberOfColumns === 1 && '70%'};
 `
 const GGFooter = Footer.extend`
-  margin: 30px 0 10px;
+  margin-top: 30px;
 `
 
 export default class PlayerGallery extends React.Component {
@@ -136,7 +146,7 @@ export default class PlayerGallery extends React.Component {
   }
 
   render = () => {
-    const { cards, showFooter, onExecute, onForget, onReplay } = this.props
+    const { cards, showFooter, onExecute, onForget } = this.props
     const { selectedIndex } = this.state
     const numberOfColumns = cards.length >= 10 ? 4 : cards.length >= 5 ? 3 : 2
     const disableButton = selectedIndex === -1
@@ -150,14 +160,11 @@ export default class PlayerGallery extends React.Component {
         </GalleryContainer>
         {showFooter && (
           <Footer>
-            <FooterButton disable={disableButton} onClick={onExecute(selectedIndex)}>
-              {locale('game.execute')}
-            </FooterButton>
             <FooterButton disable={disableButton} onClick={onForget(selectedIndex)}>
               {locale('game.forget')}
             </FooterButton>
-            <FooterButton onClick={onReplay}>
-              {locale('game.replay')}
+            <FooterButton disable={disableButton} theme='danger' onClick={onExecute(selectedIndex)}>
+              {locale('game.execute')}
             </FooterButton>
           </Footer>
         )}
@@ -195,37 +202,33 @@ export default class PlayerGallery extends React.Component {
 
   renderGGDialog = () => {
     const { cards, query, question, showGGDialog, onReplay } = this.props
+    const notLoyal = query.spy + query.whiteboard
 
     return (
-      <Dialog show={!!showGGDialog}>
-        <GGContainer>
-          <GGTitle>
-            {locale(`game.${showGGDialog}`) + locale('game.win')}
-          </GGTitle>
-          <GGSubTitle>
-            {question.loyal}
-            <GGVS>
-              VS
-            </GGVS>
-            {question.spy}
-          </GGSubTitle>
-          <GGGallery numberOfColumns={query.spy + query.whiteboard <= 1 ? 1 : 2}>
-            {cards.map((card, index) => [ 'spy', 'whiteboard' ].includes(card.type) && (
-              this.renderPlayer({
-                ...card,
-                revealed: true
-              }, index, true)
-            ))}
-          </GGGallery>
-          <GGFooter>
-            <FooterButton onClick={onReplay}>
-              {locale('game.replay')}
-            </FooterButton>
-            <FooterButton onClick={() => location.href = '/'}>
-              {locale('game.menu')}
-            </FooterButton>
-          </GGFooter>
-        </GGContainer>
+      <Dialog show={!!showGGDialog} solid>
+        <GGTitle>
+          {locale(`game.${showGGDialog}`) + locale('game.win')}
+        </GGTitle>
+        <GGSubTitle>
+          {question.loyal}
+          <GGVS>
+            VS
+          </GGVS>
+          {question.spy}
+        </GGSubTitle>
+        <GGGallery numberOfColumns={notLoyal >= 5 ? 3 : notLoyal >= 2 ? 2 : 1}>
+          {cards.map((card, index) => [ 'spy', 'whiteboard' ].includes(card.type) && (
+            this.renderPlayer({
+              ...card,
+              revealed: true
+            }, index, true)
+          ))}
+        </GGGallery>
+        <GGFooter>
+          <FooterButton onClick={onReplay}>
+            {locale('game.replay')}
+          </FooterButton>
+        </GGFooter>
       </Dialog>
     )
   }

@@ -28,7 +28,7 @@ const Container = styled.div`
 const Title = styled.h1`
   font-size: 60px;
   font-weight: bold;
-  margin: 0 0 30px;
+  margin: 0 0 25px;
   color: ${theme.accent};
   user-select: none;
 `
@@ -58,17 +58,17 @@ const StyledMenuPlayerChart = styled(MenuPlayerChart)`
   margin-bottom: 10px;
 `
 const StyledStepper = styled(Stepper)`
-  width: 70px;
-  height: 34px;
+  width: 80px;
+  height: 40px;
   margin-left: 10px;
 `
 const StyledSwitch = styled(Switch)`
-  width: 70px;
-  height: 34px;
+  width: 80px;
+  height: 40px;
   margin-left: 10px;
 `
 const SubmitButton = styled(Button)`
-  margin-top: 30px;
+  margin-top: 20px;
   padding: 20px 28px;
 `
 

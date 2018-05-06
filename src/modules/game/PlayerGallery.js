@@ -119,7 +119,7 @@ const GGVS = styled.div`
 `
 const GGGallery = Gallery.extend`
   margin-top: 20px;
-  max-width: ${props => props.numberOfColumns === 1 && '70%'};
+  max-width: ${props => props.numberOfColumns === 1 ? '60%' : props.numberOfColumns === 2 ? '70%' : ''};
 `
 const GGFooter = Footer.extend`
   margin-top: 30px;

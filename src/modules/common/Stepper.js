@@ -28,7 +28,7 @@ const Button = styled.button`
   height: 100%;
   flex: 1;
   color: #FFFFFF;
-  font-size: 14px;
+  font-size: 16px;
   transition: .4s;
   cursor: ${props => props.disabled ? 'default' : 'pointer'};
   opacity: ${props => props.disabled ? 0.1 : 1};

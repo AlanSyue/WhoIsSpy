@@ -105,15 +105,18 @@ const DrawnCardFooter = styled.div`
   position: absolute;
   top: calc(100% + 30px);
   left: 50%;
+  width: 100%;
   transform: translateX(-50%);
   display: flex;
   justify-content: center;
   align-items: center;
 `
 const FooterButton = styled(Button)`
-  padding: 20px 60px;
+  padding: 20px 0;
   line-height: 1;
   user-select: none;
+  max-width: 60%;
+  flex: 1;
 `
 const ForgetCardContainer = styled.div`
   position: absolute;

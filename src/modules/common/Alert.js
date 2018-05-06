@@ -12,7 +12,7 @@ const Container = styled.div`
 `
 const Title = styled.div`
   color: ${theme.textPrimary};
-  font-size: 20px;
+  font-size: 24px;
   text-align: center;
 `
 const Footer = styled.div`
@@ -21,7 +21,7 @@ const Footer = styled.div`
   margin-top: 30px;
 `
 const FooterButton = styled(Button)`
-  padding: 8px 12px;
+  padding: 16px 20px;
 
   :first-child {
     margin-right: 30px;

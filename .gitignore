@@ -3,6 +3,7 @@
 config/*
 !config/index.js
 !config/env.js
+!config/process.config.js
 
 node_modules
 

@@ -4,6 +4,7 @@
   "scripts": {
     "dev": "nodemon index -i src",
     "start": "NODE_ENV=production node index",
+    "start:pm2": "pm2 startOrReload config/process.config.js",
     "build": "next build src",
     "lint": "eslint .",
     "migrate:new": "db-migrate --sql-file --config config/index.js --migrations-dir migrations/pg -e pg create",

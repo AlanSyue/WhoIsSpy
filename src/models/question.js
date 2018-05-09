@@ -19,8 +19,18 @@ export default {
   effects: {
     async getQuestionAsync(payload = {}, rootState) {
       const host = process.env.NODE_ENV === 'production' ? API_HOST : ''
-      const question = await fetch(`${host}/v1/questions/random` + (payload.prevLoyal ? `?prevLoyal=${payload.prevLoyal}` : ''))
-        .then(res => res.json())
+      let question
+
+      try {
+        question = await fetch(`${host}/v1/questions/random` + (payload.prevLoyal ? `?prevLoyal=${payload.prevLoyal}` : ''))
+          .then(res => res.json())
+      } catch (err) {
+        if (err instanceof TypeError && err.message === 'Failed to fetch') {
+          const questions = await fetch('/questions.json').then(res => res.json())
+          const filteredQuestions = questions.filter(q => q.loyal !== payload.prevLoyal)
+          question = filteredQuestions[Math.floor(Math.random() * filteredQuestions.length)]
+        }
+      }
 
       this.getQuestion(question)
     },

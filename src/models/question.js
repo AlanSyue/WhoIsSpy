@@ -1,3 +1,5 @@
+const VERSION = 1
+
 import pick from 'lodash/pick'
 
 import { API_HOST } from '~/constants/common'
@@ -25,7 +27,7 @@ export default {
         question = await fetch(`${host}/v1/questions/random` + (payload.prevLoyal ? `?prevLoyal=${payload.prevLoyal}` : ''))
           .then(res => res.json())
       } catch (err) {
-        const questions = await fetch('/questions.json').then(res => res.json())
+        const questions = await fetch(`/questions-${VERSION}.json`).then(res => res.json())
         const filteredQuestions = questions.filter(q => q.loyal !== payload.prevLoyal)
         question = filteredQuestions[Math.floor(Math.random() * filteredQuestions.length)]
       }

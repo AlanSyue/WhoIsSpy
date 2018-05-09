@@ -1,5 +1,7 @@
 .next
 
+build
+
 config/*
 !config/index.js
 !config/env.js

@@ -14,7 +14,9 @@ const config = {
     password: process.env.POSTGRES_PASSWORD,
     host: process.env.POSTGRES_SERVICE_HOST || '127.0.0.1',
     port: +process.env.POSTGRES_SERVICE_PORT || 5432
-  }
+  },
+  apiUrl: process.env.API_URL,
+  webUrl: process.env.WEB_URL || 'http://localhost:4000'
 }
 
 const env = process.env.NODE_ENV || 'development'

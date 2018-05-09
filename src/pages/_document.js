@@ -55,6 +55,14 @@ export default class DpickDocument extends Document {
         <Main/>
         <NextScript/>
       </body>
+
+      <script async src='https://www.googletagmanager.com/gtag/js?id=UA-100366323-2'></script>
+      <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments)}
+        gtag('js', new Date());
+        gtag('config', 'UA-100366323-2');
+      </script>
     </html>
   )
 }

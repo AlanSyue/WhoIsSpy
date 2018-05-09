@@ -91,6 +91,8 @@ export default class MenuPage extends React.Component {
   }
 
   componentDidMount = () => {
+    if (global.sendPageview) global.sendPageview()
+
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('/serviceWorker.js').then(registration => {

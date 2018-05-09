@@ -78,6 +78,8 @@ export default class GamePage extends React.Component {
   }
 
   componentDidMount = () => {
+    if (global.sendPageview) global.sendPageview()
+
     this.props.getQuestionAsync()
 
     window.addEventListener('click', this.handleCloseForgetCard, true)

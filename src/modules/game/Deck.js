@@ -190,7 +190,7 @@ export default class Deck extends React.Component {
         location.href = '/'
       })
     } else {
-      alert(navigator.mediaDevices + ' ' + (navigator.mediaDevices && navigator.mediaDevices.getUserMedia))
+      alert('game.alert.browserNotSupportCameraError')
       location.href = '/'
     }
   }

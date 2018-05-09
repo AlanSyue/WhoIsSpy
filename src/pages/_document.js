@@ -21,6 +21,19 @@ export default class DpickDocument extends Document {
     <html>
       <Head>
         <title>{locale('title')}</title>
+        <meta name='description' content={locale('description')}/>
+        <meta name='keywords' content={locale('keywords')}/>
+
+        <meta property='og:title' content={locale('title')}/>
+        <meta property='og:type' content='Website'/>
+        <meta property='og:url' content='https://who-is-spy.firebaseapp.com/'/>
+        <meta property='og:image:secure_url' content='https://who-is-spy.firebaseapp.com/img/profile.jpg'/>
+        <meta property='og:image:width' content='378'/>
+        <meta property='og:image:height' content='378'/>
+        <meta property='og:image' content='https://who-is-spy.firebaseapp.com/img/profile.jpg'/>
+        <meta property='og:site_name' content={locale('title')}/>
+        <meta property='og:description' content={locale('description')}/>
+
         <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no'/>
         <meta name='apple-mobile-web-app-status-bar-style' content='black-translucent'/>
         {/* <meta name='apple-mobile-web-app-capable' content='yes'/> */}

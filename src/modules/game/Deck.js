@@ -111,6 +111,22 @@ const DrawnCardFooter = styled.div`
   justify-content: center;
   align-items: center;
 `
+const CurrentPlayerContainer = styled.div`
+  position: absolute;
+  top: ${size.headerHeight};
+  left: 50%;
+  transform: translateX(-50%);
+`
+const CurrentPlayerWrapper = styled.div`
+
+`
+const CurrentPlayerPhoto = styled.img`
+  height: 90px;
+  border-radius: 4px;
+`
+const CurrentPlayerText = styled.p`
+  text-align: center;
+`
 const FooterButton = styled(Button)`
   padding: 20px 0;
   line-height: 1;
@@ -166,6 +182,7 @@ export default class Deck extends React.Component {
 
     this.state = {
       cardsDrawn: 0,
+      currentPlayerSrc: this.persistPhoto ? props.cards[0].src : '',
       drawnCardDim: {},
       showDrawnCardContent: false
     }
@@ -204,6 +221,7 @@ export default class Deck extends React.Component {
       <Container show={showDeck || showForget}>
         {showDeck && (
           <React.Fragment>
+            {this.renderCurrentPlayer()}
             <Wrapper>
               {cards.slice(cardsDrawn, cards.length).reverse().map((card, index, array) => (
                 <CardContainer
@@ -254,6 +272,21 @@ export default class Deck extends React.Component {
           </React.Fragment>
         )}
       </DrawnCard>
+    )
+  }
+
+  renderCurrentPlayer = () => {
+    const { currentPlayerSrc } = this.state
+
+    return currentPlayerSrc && (
+      <CurrentPlayerContainer>
+        <CurrentPlayerWrapper>
+          <CurrentPlayerPhoto src={currentPlayerSrc}/>
+          <CurrentPlayerText>
+            {locale('game.drawCardRemind')}
+          </CurrentPlayerText>
+        </CurrentPlayerWrapper>
+      </CurrentPlayerContainer>
     )
   }
 
@@ -326,9 +359,11 @@ export default class Deck extends React.Component {
     const { cardsDrawn } = this.state
     const isLastShot = cardsDrawn >= cards.length
     const card = cards[cardsDrawn - 1] || {}
+    const nextCard = cards[cardsDrawn] || {}
 
     if (card.src) {
       this.handleShot(card.src)
+      this.setState({ currentPlayerSrc: nextCard.src })
     } else {
       this.cameraView.shot()
     }

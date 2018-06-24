@@ -9,6 +9,7 @@ const DICTIONARY = {
       replayTitle: '確定要重新開始？'
     },
     confirmCard: '我記住了',
+    drawCardRemind: '請抽卡',
     execute: '處決',
     forget: '忘詞',
     loyal: '平民',

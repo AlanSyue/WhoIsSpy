@@ -23,7 +23,7 @@ const Container = styled.div`
 `
 const Wrapper = styled.div`
   position: absolute;
-  top: 50%;
+  top: ${props => props.showCurrentPlayer ? '60%' : '50%'};
   left: 50%;
 `
 const CardContainer = styled.div.attrs({
@@ -214,7 +214,8 @@ export default class Deck extends React.Component {
 
   render = () => {
     const { cards, showDeck, showForgetIndex } = this.props
-    const { cardsDrawn } = this.state
+    const { cardsDrawn, currentPlayerSrc } = this.state
+
     const showForget = showForgetIndex !== -1
 
     return (
@@ -222,7 +223,7 @@ export default class Deck extends React.Component {
         {showDeck && (
           <React.Fragment>
             {this.renderCurrentPlayer()}
-            <Wrapper>
+            <Wrapper showCurrentPlayer={!!currentPlayerSrc}>
               {cards.slice(cardsDrawn, cards.length).reverse().map((card, index, array) => (
                 <CardContainer
                   key={index}

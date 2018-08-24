@@ -5,7 +5,6 @@ import shuffle from 'lodash/shuffle'
 import styled from 'styled-components'
 
 import Alert from '~/modules/common/Alert'
-import Button from '~/modules/common/Button'
 import Card from './Card'
 import Deck from './Deck'
 import Loading from '~/modules/common/Loading'

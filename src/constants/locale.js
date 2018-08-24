@@ -6,7 +6,8 @@ const DICTIONARY = {
       cancel: '取消',
       confirm: '確定',
       homeTitle: '確定要離開遊戲？',
-      replayTitle: '確定要重新開始？'
+      replayTitle: '確定要重新開始？',
+      ruleTitle: '規則'
     },
     confirmCard: '我記住了',
     drawCardRemind: '請抽卡',
@@ -20,8 +21,9 @@ const DICTIONARY = {
   },
   menu: {
     player: '玩家',
-    start: '開始遊戲',
+    start: '開始',
     spy: '臥底',
+    rule: '規則',
     title: '誰是臥底',
     whiteboard: '白板'
   },

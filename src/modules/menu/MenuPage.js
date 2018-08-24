@@ -1,5 +1,6 @@
 import styled, { css } from 'styled-components'
 
+import Alert from '~/modules/common/Alert'
 import Button from '~/modules/common/Button'
 import MenuPlayerChart from './MenuPlayerChart'
 import Stepper from '~/modules/common/Stepper'
@@ -77,6 +78,26 @@ const StyledSwitch = styled(Switch)`
 const SubmitButton = styled(Button)`
   margin-top: 10px;
   padding: 20px 28px;
+
+  :first-child {
+    margin-right: 20px;
+  }
+`
+const RuleContainer = styled.div`
+  color: ${theme.textPrimary};
+  font-size: 14px;
+  max-height: 50vh;
+  overflow-x: hidden;
+  overflow-y: scroll;
+  width: 100%;
+
+  ol {
+    margin-right: 5px;
+  }
+
+  li {
+    margin: 5px 0;
+  }
 `
 
 export default class MenuPage extends React.Component {
@@ -86,7 +107,8 @@ export default class MenuPage extends React.Component {
     this.state = {
       player: 4,
       spy: 1,
-      whiteboard: false
+      whiteboard: false,
+      showRuleAlert: false
     }
   }
 
@@ -115,7 +137,7 @@ export default class MenuPage extends React.Component {
   }
 
   render = () => {
-    const { player, spy, whiteboard } = this.state
+    const { player, spy, whiteboard, showRuleAlert } = this.state
     const maxSpy = Math.ceil(player / 4) - whiteboard
 
     return (
@@ -163,10 +185,41 @@ export default class MenuPage extends React.Component {
           <SubmitButton to={`/game?player=${player}&spy=${spy}&whiteboard=${+whiteboard}`}>
             <ButtonContent>{locale('menu.start')}</ButtonContent>
           </SubmitButton>
+          <SubmitButton onClick={this.toggleRuleAlert}>
+            <ButtonContent>{locale('menu.rule')}</ButtonContent>
+          </SubmitButton>
         </Section>
+        <Alert
+          show={showRuleAlert}
+          title={locale('game.alert.ruleTitle')}
+          onCancel={this.toggleRuleAlert}
+          onConfirm={this.toggleRuleAlert}>
+          {this.renderRule()}
+        </Alert>
       </Container>
     )
   }
 
   bindValueChange = name => value => this.setState({ [name]: value })
+
+  renderRule = () => (
+    <RuleContainer>
+      <ol>
+        <li>選擇玩家人數</li>
+        <li>選擇「臥底」人數，其餘為「平民」，自行選擇是否要開啟「白板」</li>
+        <li>按下「開始遊戲」</li>
+        <li>輪流抽卡，記住卡上的詞彙，按下「我記住了」並拍照</li>
+        <li>抽完後，每人輪流用一段話，隱約地描述、暗示你拿到的詞彙</li>
+        <li>切記不可說到詞彙上的字，也不可以說謊</li>
+        <li>若為身份為「白板」（詞彙為「白板」），就觀察其他人的說明來唬爛，掩飾身為「白板」的事實</li>
+        <li>每個人都講完後，投票出心目中是「臥底」的人，點擊最高票玩家頭像按下「處決」</li>
+        <li>被「處決」玩家即死亡，下一輪描述開始，死亡玩家無法參與描述以及投票</li>
+        <li>所有「臥底」先被「處決」則為「平民」獲勝且遊戲結束，反之亦然</li>
+      </ol>
+    </RuleContainer>
+  )
+
+  toggleRuleAlert = e => {
+    this.setState({ showRuleAlert: !this.state.showRuleAlert })
+  }
 }

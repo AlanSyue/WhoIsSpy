@@ -14,11 +14,12 @@ const Title = styled.div`
   color: ${theme.textPrimary};
   font-size: 24px;
   text-align: center;
+  margin-top: 20px;
 `
 const Footer = styled.div`
   display: flex;
   justify-content: center;
-  margin-top: 20px;
+  margin: 20px 0;
 `
 const FooterButton = styled(Button)`
   padding: 16px 20px;
@@ -30,6 +31,7 @@ const FooterButton = styled(Button)`
 
 export default class Alert extends React.Component {
   static propTypes = {
+    children: PropTypes.element,
     show: PropTypes.bool,
     title: PropTypes.string.isRequired,
     onCancel: PropTypes.func.isRequired,
@@ -37,14 +39,15 @@ export default class Alert extends React.Component {
   }
 
   render = () => {
-    const { show, title, onCancel, onConfirm } = this.props
+    const { children, show, title, onCancel, onConfirm } = this.props
 
     return (
-      <Dialog show={show}>
+      <Dialog noPadding={!!children} show={show}>
         <Container>
           <Title>
             {title}
           </Title>
+          {children}
           <Footer>
             <FooterButton onClick={onCancel}>
               {locale('game.alert.cancel')}

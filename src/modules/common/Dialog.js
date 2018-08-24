@@ -27,7 +27,7 @@ const Body = styled.div`
   box-shadow: ${props => !props.solid && '0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22)'};
   background-color: ${props => props.solid ? theme.dark : theme.primary};
   border-radius: 10px;
-  padding: 20px;
+  padding: ${props => !props.noPadding && '20px'};
   width: 90vw;
   max-width: ${size.maxWindowSize}px;
 `
@@ -36,6 +36,7 @@ export default class Dialog extends React.Component {
   static propTypes = {
     className: PropTypes.string,
     children: PropTypes.oneOfType([ PropTypes.array, PropTypes.element ]).isRequired,
+    noPadding: PropTypes.bool,
     show: PropTypes.bool,
     solid: PropTypes.bool,
     onClose: PropTypes.func
@@ -46,12 +47,12 @@ export default class Dialog extends React.Component {
   }
 
   render = () => {
-    const { className, children, show, solid, onClose } = this.props
+    const { className, children, noPadding, show, solid, onClose } = this.props
 
     return (
       <Container className={className} show={show} solid={solid} onClick={onClose}>
         <Wrapper onClick={this.handleWrapperClick}>
-          <Body solid={solid}>
+          <Body noPadding={noPadding} solid={solid}>
             {children}
           </Body>
         </Wrapper>

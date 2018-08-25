@@ -206,7 +206,7 @@ export default class MenuPage extends React.Component {
         </Section>
         <Alert
           show={showRuleAlert}
-          title={locale('game.alert.ruleTitle')}
+          title={locale('menu.alert.ruleTitle')}
           onCancel={this.toggleRuleAlert}
           onConfirm={this.toggleRuleAlert}>
           {this.renderRule()}
@@ -220,17 +220,7 @@ export default class MenuPage extends React.Component {
   renderRule = () => (
     <RuleContainer>
       <ol>
-        <li>選擇玩家人數</li>
-        <li>選擇「臥底」人數，其餘為「平民」，自行選擇是否要開啟「白板」</li>
-        <li>按下「開始遊戲」</li>
-        <li>輪流抽卡，記住卡上的詞彙，按下「我記住了」並拍照</li>
-        <li>抽完後，每人輪流用一段話，隱約地描述、暗示你拿到的詞彙</li>
-        <li>切記不可說到詞彙上的字，也不可以說謊</li>
-        <li>只有「臥底」的詞彙與其他人不同，「臥底」需掩飾身份與找出隊友</li>
-        <li>若為身份為「白板」（詞彙為「白板」），需觀察其他人的描述來唬爛，掩飾身為「白板」的事實</li>
-        <li>每個人都講完後，投票給你認為是「臥底」的人，點擊最高票玩家頭像並按下「處決」，若票數平手，猜拳敗者出局</li>
-        <li>被「處決」玩家即出局，繼續下一輪描述，已出局玩家無法參與描述和投票</li>
-        <li>所有「臥底」先被「處決」則為「平民」獲勝且遊戲結束，反之亦然</li>
+      {locale('menu.alert.rules').map((rule, key) => <li key={key}>{rule}</li>)}
       </ol>
     </RuleContainer>
   )

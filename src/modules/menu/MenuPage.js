@@ -76,12 +76,13 @@ const StyledSwitch = styled(Switch)`
   margin-left: 10px;
 `
 const SubmitButton = styled(Button)`
+  display: block;
+  padding: 16px 20px;
   margin-top: 10px;
-  padding: 20px 28px;
-
-  :first-child {
-    margin-right: 20px;
-  }
+`
+const SubmitButtonNoPadding = SubmitButton.extend`
+  padding: 0;
+  margin-left: 16px;
 `
 const RuleContainer = styled.div`
   color: ${theme.textPrimary};
@@ -113,6 +114,12 @@ const RuleContainer = styled.div`
   li {
     margin: 5px 0;
   }
+`
+const ButtonIcon = styled.img`
+  display: block;
+  height: 56px;
+  width: 56px;
+  padding: 12px;
 `
 
 export default class MenuPage extends React.Component {
@@ -197,12 +204,17 @@ export default class MenuPage extends React.Component {
           </Label>
         </Section>
         <Section>
-          <SubmitButton to={`/game?player=${player}&spy=${spy}&whiteboard=${+whiteboard}`}>
-            <ButtonContent>{locale('menu.start')}</ButtonContent>
-          </SubmitButton>
-          <SubmitButton onClick={this.toggleRuleAlert}>
-            <ButtonContent>{locale('menu.rule')}</ButtonContent>
-          </SubmitButton>
+          <Flex>
+            <SubmitButton to={`/game?player=${player}&spy=${spy}&whiteboard=${+whiteboard}`}>
+              <ButtonContent>{locale('menu.start')}</ButtonContent>
+            </SubmitButton>
+            <SubmitButtonNoPadding onClick={this.toggleRuleAlert}>
+              <ButtonIcon src='/img/question.svg'/>
+            </SubmitButtonNoPadding>
+            <SubmitButtonNoPadding onClick={this.openFanPage}>
+              <ButtonIcon src='/img/facebook.svg'/>
+            </SubmitButtonNoPadding>
+          </Flex>
         </Section>
         <Alert
           show={showRuleAlert}
@@ -225,7 +237,11 @@ export default class MenuPage extends React.Component {
     </RuleContainer>
   )
 
-  toggleRuleAlert = e => {
+  toggleRuleAlert = () => {
     this.setState({ showRuleAlert: !this.state.showRuleAlert })
+  }
+
+  openFanPage = () => {
+    window.open('https://www.facebook.com/WhoIsSpyWeb/')
   }
 }

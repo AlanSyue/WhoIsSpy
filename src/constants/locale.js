@@ -37,7 +37,6 @@ const DICTIONARY = {
     player: '玩家',
     start: '開始',
     spy: '臥底',
-    rule: '規則',
     title: '誰是臥底',
     whiteboard: '白板'
   },

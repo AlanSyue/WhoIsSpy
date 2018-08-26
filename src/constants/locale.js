@@ -1,8 +1,8 @@
 const DICTIONARY = {
   game: {
     alert: {
-      browserNotSupportCameraError: '您的瀏覽器（可能是App內的瀏覽器）不支援相機，請用Chrome或Safari等瀏覽器開啟',
-      cameraError: '請開啟相機權限',
+      browserNotSupportCameraError: '您的瀏覽器（可能是App內的瀏覽器）不支援相機，建議使用Chrome或Safari等瀏覽器開啟',
+      cameraError: '請開啟相機權限（建議使用Chrome或Safari等瀏覽器開啟）',
       cancel: '取消',
       confirm: '確定',
       homeTitle: '確定要離開遊戲？',

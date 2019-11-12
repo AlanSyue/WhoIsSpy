@@ -1,4 +1,5 @@
 const merge = require('lodash/merge')
+require("dotenv").config();
 
 const config = {
   app: {

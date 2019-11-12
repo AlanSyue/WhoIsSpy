@@ -10,3 +10,6 @@ config/*
 node_modules
 
 jsconfig.json
+
+postgres-data
+.env

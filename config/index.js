@@ -1,6 +1,3 @@
-const merge = require('lodash/merge')
-require("dotenv").config();
-
 const config = {
   app: {
     host: process.env.SERVER_HOST || '0.0.0.0',
@@ -13,19 +10,11 @@ const config = {
     database: process.env.POSTGRES_DB,
     user: process.env.POSTGRES_USER,
     password: process.env.POSTGRES_PASSWORD,
-    host: process.env.POSTGRES_SERVICE_HOST || '127.0.0.1',
-    port: +process.env.POSTGRES_SERVICE_PORT || 5432
+    host: process.env.POSTGRES_SERVICE_HOST || 'postgres_container',
+    port: +process.env.POSTGRES_SERVICE_PORT || 54320
   },
   apiUrl: process.env.API_URL,
   webUrl: process.env.WEB_URL || 'http://localhost:4000'
-}
-
-const env = process.env.NODE_ENV || 'development'
-
-try {
-  merge(config, require('./' + env))
-} catch (err) {
-  console.log('Failed to load config:', env)
 }
 
 module.exports = config
